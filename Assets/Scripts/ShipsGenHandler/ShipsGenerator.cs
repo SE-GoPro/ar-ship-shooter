@@ -73,7 +73,7 @@ class ShipsGenerator
     /// <returns></returns>
     public bool CheckAvailable(int x, int y, int deltaHorizontal, int deltaVertical, int length)
     {
-        // If that cell has a value other than 0, RETURN FALSE
+        // If that cell has a part of ship. RETURN FALSE
         if (mapArr[y, x] != 0) return false;
         // If there is a block towards the direction from that cell. RETURN FALSE
         for (int tempCol = x, tempRow = y, stepExpand = 0;
@@ -81,7 +81,7 @@ class ShipsGenerator
             tempCol += deltaHorizontal, tempRow += deltaVertical, stepExpand++)
         {
             if (tempCol > MAP_SIZE - 1 || tempCol < 0 || tempRow > MAP_SIZE - 1 || tempRow < 0
-                || (mapArr[tempRow, tempCol] != 0 && stepExpand < length))
+                || (mapArr[tempRow, tempCol] != 0))
             {
                 return false;
             }
@@ -132,7 +132,7 @@ class ShipsGenerator
         Ship newShip = new Ship(idShip, length, dir, root);
         shipsList.Add(newShip);
 
-        /** DRAW A SHIP FROM THAT CELL AND UPDATE MAP*/
+        /** ADD THAT SHIP TO MAP AND UPDATE MAP*/
         for (int step = 1; step <= length; step++)
         {
             mapArr[y, x] = length;
