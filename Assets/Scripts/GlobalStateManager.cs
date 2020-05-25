@@ -1,94 +1,94 @@
-﻿using System;
-using UnityEngine;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 
-public class GlobalStateManager
+public class StateManager : StateNotifier
 {
-    public GlobalStateManager()
+    public StateManager()
     {
     }
 
-    private GlobalState CurrentState;
+    private State CurrentState;
 
-    public GlobalState GetCurrentState => CurrentState;
+    public State GetCurrentState => CurrentState;
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public GlobalState ChangeState(GlobalState nextState)
+    public State ChangeState(State nextState)
     {
-        switch(nextState)
+        Dictionary<object, object> Data = new Dictionary<object, object>();
+        switch (nextState)
         {
-            case GlobalState.SETTINGS:
-                if (CurrentState == GlobalState.MAIN_MENU) {
+            case State.SETTINGS:
+                if (CurrentState == State.MAIN_MENU) {
                     // Show settings
                     break;
                 }
                 return CurrentState;
 
-            case GlobalState.SELECTING_GAME_MODE:
-                if (CurrentState == GlobalState.MAIN_MENU)
+            case State.SELECTING_GAME_MODE:
+                if (CurrentState == State.MAIN_MENU)
                 {
                     // Show main menu
                     break;
                 }
                 return CurrentState;
 
-            case GlobalState.FINDING_NEARBY:
-                if (CurrentState == GlobalState.SELECTING_GAME_MODE)
+            case State.FINDING_NEARBY:
+                if (CurrentState == State.SELECTING_GAME_MODE)
                 {
                     // Find nearby devices that is openning this game
                     break;
                 }
                 return CurrentState;
 
-            case GlobalState.NEARBY_LIST:
-                if (CurrentState == GlobalState.FINDING_NEARBY)
+            case State.NEARBY_LIST:
+                if (CurrentState == State.FINDING_NEARBY)
                 {
                     // Show selecting modal
                     break;
                 }
                 return CurrentState;
 
-            case GlobalState.MATCHING:
-                if (CurrentState == GlobalState.NEARBY_LIST)
+            case State.MATCHING:
+                if (CurrentState == State.NEARBY_LIST)
                 {
                     // Match 2 player, set up connection
                     break;
                 }
-                if (CurrentState == GlobalState.POST_GAME)
+                if (CurrentState == State.POST_GAME)
                 {
                     // rematch
                     break;
                 }
                 return CurrentState;
 
-            case GlobalState.PRE_GAME:
-                if (CurrentState == GlobalState.MATCHING)
+            case State.PRE_GAME:
+                if (CurrentState == State.MATCHING)
                 {
                     // Use PreGameStateManager
                     break;
                 }
                 return CurrentState;
 
-            case GlobalState.IN_GAME:
-                if (CurrentState == GlobalState.PRE_GAME)
+            case State.IN_GAME:
+                if (CurrentState == State.PRE_GAME)
                 {
                     // Use InGameStateManager
                     break;
                 }
                 return CurrentState;
 
-            case GlobalState.POST_GAME:
-                if (CurrentState == GlobalState.IN_GAME)
+            case State.POST_GAME:
+                if (CurrentState == State.IN_GAME)
                 {
                     // Show result
                     break;
                 }
                 return CurrentState;
 
-            case GlobalState.MAIN_MENU:
+            case State.MAIN_MENU:
                 if (
-                    CurrentState == GlobalState.SETTINGS
-                    || CurrentState == GlobalState.POST_GAME
+                    CurrentState == State.SETTINGS
+                    || CurrentState == State.POST_GAME
                 )
                 {
                     // Show result
@@ -102,5 +102,20 @@ public class GlobalStateManager
 
         CurrentState = nextState;
         return CurrentState;
+    }
+
+    private List<StateListener> StateListeners = new List<StateListener>();
+
+    public void RegisterListener(StateListener listener)
+    {
+        StateListeners.Add(listener);
+    }
+
+    public void NotifyNewState(State prevState, State currentState)
+    {
+        StateListeners.ForEach(delegate (StateListener listener)
+        {
+            listener.OnNewState(prevState, currentState);
+        });
     }
 }
