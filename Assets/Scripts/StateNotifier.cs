@@ -1,5 +1,5 @@
 ﻿public interface StateNotifier
 {
-    public void RegisterListener(StateListener listener);
-    public void NotifyNewState(State prevState, State currentState);
+    void RegisterListener(StateListener listener);
+    void NotifyNewState(State prevState, State currentState);
 }
