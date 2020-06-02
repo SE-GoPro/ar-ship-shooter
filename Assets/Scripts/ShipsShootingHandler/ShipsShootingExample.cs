@@ -20,7 +20,7 @@ class ShipsShootingExample
             reRenderPartShipExploded(declaredCell);
             if (ss.CheckIfWholeShipExploded(currentShip))
             {
-                if (ss.CheckIfAllShipsExploded())
+                if (ss.CheckIfAllShipsExploded(currentPlayer))
                 {
                     endGame();
                 }

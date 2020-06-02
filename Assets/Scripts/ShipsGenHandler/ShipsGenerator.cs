@@ -19,11 +19,11 @@ class ShipsGenerator
         this.MAP_SIZE = MAP_SIZE;
         mapArr = new int[MAP_SIZE, MAP_SIZE];
         // Initialize map
-        for (int i = 0; i < MAP_SIZE; i++)
+        for (int row = 0; row < MAP_SIZE; row++)
         {
-            for (int j = 0; j < MAP_SIZE; j++)
+            for (int col = 0; col < MAP_SIZE; col++)
             {
-                mapArr[i, j] = 0;
+                mapArr[row, col] = 0;
             }
         }
     }
@@ -33,11 +33,11 @@ class ShipsGenerator
     /// </summary>
     public void PrintMap()
     {
-        for (int i = 0; i < MAP_SIZE; i++)
+        for (int row = 0; row < MAP_SIZE; row++)
         {
-            for (int j = 0; j < MAP_SIZE; j++)
+            for (int col = 0; col < MAP_SIZE; col++)
             {
-                Console.Write(mapArr[i, j] + " ");
+                Console.Write(mapArr[row, col] + " ");
             }
             Console.Write("\n");
         }
