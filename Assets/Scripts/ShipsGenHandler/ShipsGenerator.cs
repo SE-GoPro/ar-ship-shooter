@@ -135,6 +135,7 @@ class ShipsGenerator
         /** ADD THAT SHIP TO MAP AND UPDATE MAP*/
         for (int step = 1; step <= length; step++)
         {
+            newShip.arrPartShip.Add(new Cell(x, y), PART_SHIP.INTACT);
             mapArr[y, x] = length;
             y += newDir.deltaVertical;
             x += newDir.deltaHorizontal;
