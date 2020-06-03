@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PreGameController : MonoBehaviour
@@ -10,10 +11,13 @@ public class PreGameController : MonoBehaviour
     public GameObject Ship2Prefab = null;
     public GameObject Ship1Prefab = null;
 
+    private GameObject FieldMap;
+
+
     // Start is called before the first frame update
     void Start()
     {
-        GameObject FieldMap = Instantiate(
+        FieldMap = Instantiate(
             FieldMapPrefab,
             transform.position,
             Quaternion.identity
@@ -32,11 +36,47 @@ public class PreGameController : MonoBehaviour
         );
         Ship31.GetComponent<ShipController>().FieldMap = FieldMap;
         Ship31.GetComponent<ShipController>().id = 1;
+
+        PreGameStateManager.Init();
+        PreGameStateManager.instance.ChangeState(State.ARRANGE_SHIPS);
+        InvokeRepeating("UpdateRemainingTime", 1.0f, 1.0f);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void UpdateRemainingTime()
     {
-        
+        PreGameStateManager.instance.RemainingTime--;
+        GameObject timer = GameObject.FindGameObjectWithTag("TIMER");
+        timer.GetComponent<TextMeshProUGUI>().text = PreGameStateManager.instance.RemainingTime.ToString() + " s";
+
+        if (PreGameStateManager.instance.RemainingTime <= 0)
+        {
+            CancelInvoke("UpdateRemainingTime");
+            if (!PreGameStateManager.instance.SelfReady || !PreGameStateManager.instance.OpReady)
+            {
+                Debug.LogError("Someone is not ready");
+                return;
+            }
+        }
     }
+
+    public void Ready()
+    {
+        GameObject[] shipArr = FieldMap.GetComponent<FieldMapController>().shipArr;
+        bool allSet = true;
+        foreach (GameObject ship in shipArr)
+        {
+            if (ship == null) allSet = false;
+        }
+        if (!allSet)
+        {
+            Debug.LogError("Should set up all ships.");
+        } else
+        {
+            CancelInvoke("UpdateRemainingTime");
+            PreGameStateManager.instance.ChangeState(State.NULL);
+            StateManager.instance.ChangeState(State.IN_GAME);
+        }
+    }
+
+
 }

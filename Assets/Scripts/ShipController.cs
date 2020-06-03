@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -35,7 +37,6 @@ class ShipController : MonoBehaviour
                 Input.mousePosition.y,
                 ZPosition
             );
-            // TODO: offset
             transform.position = Camera.main.ScreenToWorldPoint(position);
             FieldMapController fieldMapColtroller = FieldMap.GetComponent<FieldMapController>();
             Vector2 pos = fieldMapColtroller.GetCellPosFromShipPos(transform.position);
@@ -91,5 +92,43 @@ class ShipController : MonoBehaviour
     public void SetDirection(int dir)
     {
         direction = new Direction(dir);
+    }
+
+    public Dictionary<string, string> Serialize()
+    {
+        Dictionary<string, string> data = new Dictionary<string, string>();
+        data.Add("rootRow", root.GetComponent<CellController>().row.ToString());
+        data.Add("rootCol", root.GetComponent<CellController>().col.ToString());
+        data.Add("dir", direction.dir.ToString());
+        data.Add("length", length.ToString());
+        data.Add("id", id.ToString());
+        return data;
+    }
+
+    public void UpdateFromDict(Dictionary<string, string> data)
+    {
+        FieldMapController fieldMapColtroller = FieldMap.GetComponent<FieldMapController>();
+        string rootRow;
+        string rootCol;
+        string dir;
+        string length;
+        string id;
+        if (
+            data.TryGetValue("rootRow", out rootRow)
+            && data.TryGetValue("rootCol", out rootCol)
+            && data.TryGetValue("dir", out dir)
+            && data.TryGetValue("length", out length)
+            && data.TryGetValue("id", out id)
+        )
+        {
+            this.root = fieldMapColtroller.mapArr[Int32.Parse(rootRow), Int32.Parse(rootCol)];
+            this.direction = new Direction(Int32.Parse(dir));
+            this.length = Int32.Parse(length);
+            this.id = Int32.Parse(id);
+        }
+        else
+        {
+            Debug.LogError("Can not handle message.");
+        }
     }
 }

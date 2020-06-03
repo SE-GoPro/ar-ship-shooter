@@ -1,10 +1,26 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StateManager : StateNotifier
 {
-    public StateManager()
+    public static StateManager instance = null;
+
+    public bool isHost = false;
+
+    private StateManager()
     {
+        CurrentState = State.MAIN_MENU;
+    }
+
+    public static StateManager Init()
+    {
+        if (instance == null)
+        {
+            instance = new StateManager();
+        }
+        return instance;
     }
 
     private State CurrentState;
@@ -24,47 +40,18 @@ public class StateManager : StateNotifier
                 }
                 return CurrentState;
 
-            case State.SELECTING_GAME_MODE:
-                if (CurrentState == State.MAIN_MENU)
-                {
-                    // Show main menu
-                    break;
-                }
-                return CurrentState;
-
             case State.FINDING_NEARBY:
-                if (CurrentState == State.SELECTING_GAME_MODE)
+                if (CurrentState == State.MAIN_MENU)
                 {
                     // Find nearby devices that is openning this game
                     break;
                 }
                 return CurrentState;
 
-            case State.NEARBY_LIST:
+            case State.PRE_GAME:
                 if (CurrentState == State.FINDING_NEARBY)
                 {
-                    // Show selecting modal
-                    break;
-                }
-                return CurrentState;
-
-            case State.MATCHING:
-                if (CurrentState == State.NEARBY_LIST)
-                {
-                    // Match 2 player, set up connection
-                    break;
-                }
-                if (CurrentState == State.POST_GAME)
-                {
-                    // rematch
-                    break;
-                }
-                return CurrentState;
-
-            case State.PRE_GAME:
-                if (CurrentState == State.MATCHING)
-                {
-                    // Use PreGameStateManager
+                    SceneManager.LoadScene(Constants.SCENE_INDEX_PREGAME);
                     break;
                 }
                 return CurrentState;
@@ -72,7 +59,7 @@ public class StateManager : StateNotifier
             case State.IN_GAME:
                 if (CurrentState == State.PRE_GAME)
                 {
-                    // Use InGameStateManager
+                    SceneManager.LoadScene(Constants.SCENE_INDEX_INGAME);
                     break;
                 }
                 return CurrentState;

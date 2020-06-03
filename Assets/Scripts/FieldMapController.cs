@@ -8,8 +8,8 @@ public class FieldMapController : MonoBehaviour
 {
     public int size = Constants.MAP_SIZE;
     public GameObject CellPrefab = null;
-    private GameObject[,] mapArr;
-    private GameObject[] shipArr;
+    public GameObject[,] mapArr;
+    public GameObject[] shipArr;
 
     // Start is called before the first frame update
     void Start()
