@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
     public GameObject ConnectionPrefab = null;
-    private GameObject Connection = null;
+    public GameObject Connection = null;
 
     // Start is called before the first frame update
     void Start()
@@ -19,6 +19,7 @@ public class MainMenu : MonoBehaviour
         {
             Connection = Instantiate(ConnectionPrefab);
             Connection.GetComponent<Connection>().MainMenu = gameObject;
+            Connection.tag = "CONNECTION";
         }
         StateManager.instance.ChangeState(State.FINDING_NEARBY);
     }

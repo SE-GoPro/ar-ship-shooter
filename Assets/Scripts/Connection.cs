@@ -9,6 +9,8 @@ public class Connection : WifiDirectBase
 {
     public GameObject MainMenu = null;
     AndroidJavaObject mWiFiManager;
+    public string MyId = null;
+    public string OpId = null;
 
     void Start()
     {
@@ -33,6 +35,7 @@ public class Connection : WifiDirectBase
     //when the WifiDirect services is connected to the phone, begin broadcasting and discovering services
     public override void OnServiceConnected()
     {
+        Logger.Log("Connected");
         base.BroadcastService(Constants.WFDR_NAMESPACE, new Dictionary<string, string>());
         base.DiscoverServices();
     }
@@ -40,12 +43,11 @@ public class Connection : WifiDirectBase
     //On finding a service
     public override void OnServiceFound(string addr)
     {
+        Logger.Log(addr);
+        OpId = addr;
         // TODO: check GetSelfId
-        if (String.Compare(addr, GetSelfId(), StringComparison.Ordinal) > 0)
-        {
-            StateManager.instance.isHost = true;
-            MakeConnection(addr);
-        }
+        Logger.Log("OpId: " + addr);
+        MakeConnection(addr);
     }
 
     //When the button is clicked, connect to the service at its address
@@ -57,34 +59,62 @@ public class Connection : WifiDirectBase
     //When connected
     public override void OnConnect()
     {
-        if (StateManager.instance.isHost)
-        {
-            StateManager.instance.ChangeState(State.PRE_GAME);
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data.Add("newGlobalState", State.PRE_GAME.ToString());
-            base.Send(data);
-        }
+        Dictionary<string, string> data = new Dictionary<string, string>();
+        data.Add("type", "send_id");
+        data.Add("id", OpId);
+        base.Send(data);
     }
 
     //When recieving a new message, parse the color and set it to the cube
     public override void OnReceiveMessage(string message)
     {
+        Logger.Log(message);
         Dictionary<string, string> data = base.OnReceive(message);
+        string type;
         string newGlobalState;
         string newPreGameState;
         string newInGameState;
 
-        if (data.TryGetValue("newGlobalState", out newGlobalState))
+        if (data.TryGetValue("type", out type))
         {
-            StateManager.instance.ChangeState((State)(Int32.Parse(newGlobalState)));
-        }
-        if (data.TryGetValue("newPreGameState", out newPreGameState))
-        {
-            PreGameStateManager.instance.ChangeState((State)(Int32.Parse(newPreGameState)));
-        }
-        if (data.TryGetValue("newInGameState", out newInGameState))
-        {
-            // TODO
+            if (type == "state_change")
+            {
+                if (data.TryGetValue("newGlobalState", out newGlobalState))
+                {
+                    Logger.Log(newGlobalState);
+                    StateManager.instance.ChangeState((State)Int32.Parse(newGlobalState));
+                }
+                if (data.TryGetValue("newPreGameState", out newPreGameState))
+                {
+                    Logger.Log(newPreGameState);
+                    PreGameStateManager.instance.ChangeState((State)(Int32.Parse(newPreGameState)));
+                }
+                if (data.TryGetValue("newInGameState", out newInGameState))
+                {
+                    // TODO
+                }
+            }
+            if (type == "ready")
+            {
+                PreGameStateManager.instance.OnReady(false);
+            }
+            if (type == "send_id")
+            {
+                if (data.TryGetValue("id", out MyId))
+                {
+                    Logger.Log("MyId: " + MyId);
+                    if (String.Compare(OpId, MyId, StringComparison.Ordinal) > 0)
+                    {
+                        Logger.Log("is host");
+                        StateManager.instance.isHost = true;
+                        StateManager.instance.ChangeState(State.PRE_GAME);
+                        Dictionary<string, string> dict = new Dictionary<string, string>();
+                        dict.Add("type", "state_change");
+                        dict.Add("newGlobalState", ((int)State.PRE_GAME).ToString());
+                        base.Send(dict);
+                    }
+                }
+            }
         }
     }
 
