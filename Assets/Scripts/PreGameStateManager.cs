@@ -45,7 +45,10 @@ public class PreGameStateManager : StateNotifier
             case State.WAITING_OP:
                 if (CurrentState == State.ARRANGE_SHIPS)
                 {
-                    SelfReady = true;
+                    OnReady(true);
+                    Dictionary<string, string> dict = new Dictionary<string, string>();
+                    dict.Add("type", "ready");
+                    GameObject.FindGameObjectWithTag("CONNECTION").GetComponent<Connection>().Send(dict);
                     break;
                 }
                 return CurrentState;
@@ -78,5 +81,22 @@ public class PreGameStateManager : StateNotifier
         {
             listener.OnNewState(prevState, currentState);
         });
+    }
+
+    public void OnReady(bool isSelf)
+    {
+        if (isSelf)
+            SelfReady = true;
+        else
+            OpReady = true;
+        if (SelfReady && OpReady)
+        {
+            ChangeState(State.NULL);
+            StateManager.instance.ChangeState(State.IN_GAME);
+            //Dictionary<string, string> dict = new Dictionary<string, string>();
+            //dict.Add("type", "ready");
+            //GameObject.FindObjectOfType<Connection>().Send(dict);
+        }
+
     }
 }

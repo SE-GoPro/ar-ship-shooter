@@ -204,6 +204,7 @@ public class WifiDirectBase : MonoBehaviour
 
 	public Dictionary<string, string> OnReceive(string strDict)
 	{
+		Logger.Log(strDict);
 		Dictionary<string, string> result = new Dictionary<string, string>();
 		string[] pairs = strDict.Split('&');
 		foreach (string pair in pairs)

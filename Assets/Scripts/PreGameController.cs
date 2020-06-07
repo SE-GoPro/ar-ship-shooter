@@ -13,7 +13,6 @@ public class PreGameController : MonoBehaviour
 
     private GameObject FieldMap;
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -73,8 +72,7 @@ public class PreGameController : MonoBehaviour
         } else
         {
             CancelInvoke("UpdateRemainingTime");
-            PreGameStateManager.instance.ChangeState(State.NULL);
-            StateManager.instance.ChangeState(State.IN_GAME);
+            PreGameStateManager.instance.ChangeState(State.WAITING_OP);
         }
     }
 
