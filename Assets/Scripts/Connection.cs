@@ -7,35 +7,71 @@ using UnityEngine.UI;
 
 public class Connection : WifiDirectBase
 {
+    static Connection instance = null;
+
     public GameObject MainMenu = null;
     AndroidJavaObject mWiFiManager;
-    public string MyId = null;
+    public string MyId = SystemInfo.deviceUniqueIdentifier;
     public string OpId = null;
+    public bool Connected = false;
+    public bool isHost = false;
 
-    void Start()
+    public static Connection Instance
     {
-        base.Initialize(this.gameObject.name);
-        Debug.Log("Finding");
+        get
+        {
+            return instance ? instance : (instance = (new GameObject("ConnectionObject")).AddComponent<Connection>());
+        }
     }
 
-    string GetSelfId()
+    public void Initialize()
     {
-        string macAddr = "";
-        if (mWiFiManager == null)
+        base.Initialize(this.gameObject.name);
+        Logger.Log("Connection: initialized");
+    }
+
+    public bool setWifiEnabled(bool enabled)
+    {
+        try
         {
             using (AndroidJavaObject activity = new AndroidJavaClass("com.unity3d.player.UnityPlayer").GetStatic<AndroidJavaObject>("currentActivity"))
             {
-                mWiFiManager = activity.Call<AndroidJavaObject>("getSystemService", "wifi");
+                using (var wifiManager = activity.Call<AndroidJavaObject>("getSystemService", "wifi"))
+                {
+                    return wifiManager.Call<bool>("setWifiEnabled", enabled);
+                }
             }
         }
-        macAddr = mWiFiManager.Call<AndroidJavaObject>("getConnectionInfo").Call<string>("getMacAddress");
-        return macAddr;
+        catch (Exception e)
+        {
+            Logger.LogError(e);
+        }
+        return false;
+    }
+
+    public bool isWifiEnabled()
+    {
+        try
+        {
+            using (AndroidJavaObject activity = new AndroidJavaClass("com.unity3d.player.UnityPlayer").GetStatic<AndroidJavaObject>("currentActivity"))
+            {
+                using (var wifiManager = activity.Call<AndroidJavaObject>("getSystemService", "wifi"))
+                {
+                    return wifiManager.Call<bool>("isWifiEnabled");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e);
+        }
+        return false;
     }
 
     //when the WifiDirect services is connected to the phone, begin broadcasting and discovering services
     public override void OnServiceConnected()
     {
-        Logger.Log("Connected");
+        Logger.Log("Connection: OnServiceConnected");
         base.BroadcastService(Constants.WFDR_NAMESPACE, new Dictionary<string, string>());
         base.DiscoverServices();
     }
@@ -43,10 +79,8 @@ public class Connection : WifiDirectBase
     //On finding a service
     public override void OnServiceFound(string addr)
     {
-        Logger.Log(addr);
-        OpId = addr;
-        // TODO: check GetSelfId
-        Logger.Log("OpId: " + addr);
+        Logger.Log("Connection: OnServiceFound - " + addr);
+        // Auto-connect
         MakeConnection(addr);
     }
 
@@ -54,66 +88,58 @@ public class Connection : WifiDirectBase
     private void MakeConnection(string addr)
     {
         base.ConnectToService(addr);
+        Logger.Log("Connection: ConnectToService");
     }
 
     //When connected
     public override void OnConnect()
     {
-        Dictionary<string, string> data = new Dictionary<string, string>();
-        data.Add("type", "send_id");
-        data.Add("id", OpId);
-        base.Send(data);
+        if (!Connected)
+        {
+            Connected = true;
+            base.StopDiscovering();
+            Logger.Log("Connection: StopDiscovering");
+            base.Send(new Message(MessageTypes.SEND_ID, MyId));
+        }
     }
 
     //When recieving a new message, parse the color and set it to the cube
-    public override void OnReceiveMessage(string message)
+    public override void OnReceiveMessage(string textMessage)
     {
-        Logger.Log(message);
-        Dictionary<string, string> data = base.OnReceive(message);
-        string type;
-        string newGlobalState;
-        string newPreGameState;
-        string newInGameState;
+        Logger.Log("Conection: OnReceiveMessage - " + textMessage);
+        Message message = base.OnReceive(textMessage);
 
-        if (data.TryGetValue("type", out type))
+        if (message.type != null)
         {
-            if (type == "state_change")
+            switch(message.type)
             {
-                if (data.TryGetValue("newGlobalState", out newGlobalState))
-                {
-                    Logger.Log(newGlobalState);
-                    StateManager.instance.ChangeState((State)Int32.Parse(newGlobalState));
-                }
-                if (data.TryGetValue("newPreGameState", out newPreGameState))
-                {
-                    Logger.Log(newPreGameState);
-                    PreGameStateManager.instance.ChangeState((State)(Int32.Parse(newPreGameState)));
-                }
-                if (data.TryGetValue("newInGameState", out newInGameState))
-                {
-                    // TODO
-                }
-            }
-            if (type == "ready")
-            {
-                PreGameStateManager.instance.OnReady(false);
-            }
-            if (type == "send_id")
-            {
-                if (data.TryGetValue("id", out MyId))
-                {
-                    Logger.Log("MyId: " + MyId);
-                    if (String.Compare(OpId, MyId, StringComparison.Ordinal) > 0)
+                case (MessageTypes.SEND_ID):
                     {
-                        Logger.Log("is host");
-                        StateManager.instance.isHost = true;
-                        StateManager.instance.ChangeState(State.PRE_GAME);
-                        Dictionary<string, string> dict = new Dictionary<string, string>();
-                        dict.Add("type", "state_change");
-                        dict.Add("newGlobalState", ((int)State.PRE_GAME).ToString());
-                        base.Send(dict);
+                        OpId = message.data;
+                        if (String.Compare(MyId, OpId) < 0)
+                        {
+                            isHost = false;
+                            base.Send(new Message(MessageTypes.GRANT_HOST, null));
+                        }
+                        break;
                     }
-                }
+
+                case (MessageTypes.GRANT_HOST):
+                    {
+                        isHost = true;
+                        GameManager.Instance.isHost = true;
+                        GameManager.Instance.StartGame();
+                        break;
+                    }
+
+                case (MessageTypes.STATE_CHANGE):
+                    {
+                        GameState newState = JsonUtility.FromJson<GameState>(message.data);
+                        GameManager.Instance.OnRequestChangeState(newState);
+                        break;
+                    }
+
+                default: break;
             }
         }
     }
@@ -121,7 +147,7 @@ public class Connection : WifiDirectBase
     //Kill Switch
     public override void OnServiceDisconnected()
     {
-        base.Terminate();
+        Stop();
     }
 
     //Kill Switch
@@ -130,6 +156,13 @@ public class Connection : WifiDirectBase
         if (pause)
         {
             this.OnServiceDisconnected();
+            Connected = false;
         }
+    }
+
+    public void Stop()
+    {
+        base.Terminate();
+        Connected = false;
     }
 }

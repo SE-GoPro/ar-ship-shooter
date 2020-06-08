@@ -6,6 +6,7 @@ TagManager:
   tags:
   - TIMER
   - LOGGER
+  - WIFI_DISABLED
   layers:
   - Default
   - TransparentFX

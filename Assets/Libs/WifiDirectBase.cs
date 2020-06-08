@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml;
 using System.Text;
 using System;
+
 #if UNITY_ANDROID
 /// <summary>
 /// The base class of the library
@@ -13,6 +12,7 @@ using System;
 /// </remarks>
 public class WifiDirectBase : MonoBehaviour {
 	private static AndroidJavaObject _wifiDirect = null;
+
 	/// <summary>
 	/// Intializes the library, should only be called once.
 	/// </summary>
@@ -26,14 +26,16 @@ public class WifiDirectBase : MonoBehaviour {
 		}
         // After successfully initialize service, your gameObject is able to broastcast this service.
 	}
+
 	/// <summary>
 	/// Terminates the library (use to gracefully exit)
-	/// </summary> 
+	/// </summary>
 	public void Terminate () {
 		if (_wifiDirect != null) {
 			_wifiDirect.CallStatic ("terminate");
 		}
 	}
+
 	/// <summary>
 	/// Broadcasts a service for other devices to discover.
 	/// </summary>
@@ -53,18 +55,21 @@ public class WifiDirectBase : MonoBehaviour {
 			_wifiDirect.CallStatic ("broadcastService", service, hashMap);
 		}
 	}
+
 	/// <summary>
 	/// Search for services (no timeout)
 	/// </summary>
 	public void DiscoverServices () {
 		_wifiDirect.CallStatic ("discoverServices");
 	}
+
 	/// <summary>
 	/// Stops searching for services
 	/// </summary>
 	public void StopDiscovering () {
 		_wifiDirect.CallStatic ("stopDiscovering");
 	}
+
 	/// <summary>
 	/// Connects to a service
 	/// </summary>
@@ -74,6 +79,7 @@ public class WifiDirectBase : MonoBehaviour {
 	public void ConnectToService (string addr) {
 		_wifiDirect.CallStatic ("connectToService", addr);
 	}
+
 	/// <summary>
 	/// Sends a message to the connected device
 	/// </summary>
@@ -96,6 +102,7 @@ public class WifiDirectBase : MonoBehaviour {
 	public bool IsReady () {
 		return _wifiDirect.GetStatic<bool> ("wifiDirectHandlerBound");
 	}
+
 	//events
 	/// <summary>
 	/// Called when the library is ready
@@ -103,12 +110,14 @@ public class WifiDirectBase : MonoBehaviour {
 	public virtual void OnServiceConnected () {
 		Debug.Log ("service is legit");
 	}
+
 	/// <summary>
 	/// Called when the library's backend is shutdown
 	/// </summary>
 	public virtual void OnServiceDisconnected () {
 		Debug.Log ("service failed");
 	}
+
 	/// <summary>
 	/// Called when a service without text records has been found
 	/// </summary>
@@ -118,6 +127,7 @@ public class WifiDirectBase : MonoBehaviour {
 	public virtual void OnServiceFound (string addr) {
 
 	}
+
 	/// <summary>
 	/// Called when a service with text records has been found (includes deserializer)
 	/// </summary>
@@ -142,9 +152,10 @@ public class WifiDirectBase : MonoBehaviour {
 			remaining = remaining.Substring (splitIndex + 1);
 			record.Add (Encoding.Unicode.GetString(Convert.FromBase64String(key)), Encoding.Unicode.GetString(Convert.FromBase64String(value)));
 		}
-		Debug.Log("stringify record found");
+		Debug.Log("stringify record found - " + addr + " - " + record.ToString());
 		this.OnTxtRecord (addr, record);
 	}
+
 	/// <summary>
 	/// Called when a service with text record is found (deserialized already)
 	/// </summary>
@@ -157,12 +168,14 @@ public class WifiDirectBase : MonoBehaviour {
 	public virtual void OnTxtRecord(string addr, Dictionary<string, string> record) {
 		
 	}
+
 	/// <summary>
 	/// Called when connected to a client
 	/// </summary>
 	public virtual void OnConnect () {
 		
 	}
+
 	/// <summary>
 	/// Called when the other device has sent a message.
 	/// </summary>
@@ -173,25 +186,25 @@ public class WifiDirectBase : MonoBehaviour {
     
 	}
 
-    public void Send(Dictionary<string, string> dict) {
-        string stringifyDict = "";
-        foreach(KeyValuePair<string, string> pair in dict) {
-            stringifyDict += pair.Key + "=" + pair.Value + "&";
-        }
-        this.PublishMessage(stringifyDict.TrimEnd('&'));
+    public void Send(Message message) {
+		//Dictionary<string, string> dict = new Dictionary<string, string>();
+		//dict.Add("type", message.type);
+		//Logger.Log("Stringify data: " + JsonUtility.ToJson(data));
+		//dict.Add("data", JsonUtility.ToJson(data));
+		//string stringifyDict = "";
+		//      foreach(KeyValuePair<string, string> pair in dict) {
+		//          stringifyDict += pair.Key + "=" + pair.Value + "&";
+		//      }
+		string stringifyDict = "message=" + JsonUtility.ToJson(message);
+		Logger.Log("Sending: " + stringifyDict);
+		this.PublishMessage(stringifyDict);
     }
 
-	public Dictionary<string, string> OnReceive(string strDict)
+	public Message OnReceive(string strDict)
 	{
-		Logger.Log(strDict);
-		Dictionary<string, string> result = new Dictionary<string, string>();
-		string[] pairs = strDict.Split('&');
-		foreach (string pair in pairs)
-		{
-			string[] kav = pair.Split('=');
-			result.Add(kav[0], kav[1]);
-		}
-		return result;
+		string stringifiedMessage = strDict.Split('=')[1];
+		Message message = JsonUtility.FromJson<Message>(stringifiedMessage);
+		return message;
 	}
 }
 #endif

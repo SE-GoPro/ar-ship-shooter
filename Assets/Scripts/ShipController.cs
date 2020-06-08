@@ -128,7 +128,7 @@ class ShipController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Can not handle message.");
+            Logger.LogError("Can not handle message.");
         }
     }
 }

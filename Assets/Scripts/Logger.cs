@@ -8,14 +8,24 @@ public class Logger
     {
     }
 
-    public static void Log(String text)
+    private static void LogToScreen(object message)
     {
         GameObject[] LoggerTexts = GameObject.FindGameObjectsWithTag("LOGGER");
         foreach (GameObject logger in LoggerTexts)
         {
-            logger.GetComponent<Text>().text = logger.GetComponent<Text>().text + " - " + text;
-
-            Debug.Log("ARGAME " + text);
+            logger.GetComponent<Text>().text = logger.GetComponent<Text>().text + " - " + message.ToString();
         }
+    }
+
+    public static void Log(String text)
+    {
+        Debug.Log(text);
+        LogToScreen(text);
+    }
+
+    public static void LogError(object error)
+    {
+        Debug.LogError(error);
+        LogToScreen(error);
     }
 }

@@ -3,30 +3,45 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    public GameObject ConnectionPrefab = null;
-    public GameObject Connection = null;
+    public GameObject wifiDisabledObject;
+    public GameObject wifiEnabledObject;
 
     // Start is called before the first frame update
     void Start()
     {
-        StateManager.Init();
+        //StateManager.Init();
     }
 
     // Start is called before the first frame update
     public void PlayGame()
     {
-        if (Connection == null)
+        if (Connection.Instance.isWifiEnabled())
         {
-            Connection = Instantiate(ConnectionPrefab);
-            Connection.GetComponent<Connection>().MainMenu = gameObject;
-            Connection.tag = "CONNECTION";
+            wifiDisabledObject.SetActive(false);
+            wifiEnabledObject.SetActive(true);
+            Connection.Instance.Initialize();
         }
-        StateManager.instance.ChangeState(State.FINDING_NEARBY);
+        else
+        {
+            wifiDisabledObject.SetActive(true);
+            wifiEnabledObject.SetActive(false);
+        }
+        //StateManager.instance.ChangeState(State.FINDING_NEARBY);
     }
 
-    public void Quit()
+    public void StopPlaying()
     {
-        Debug.Log("QUIT");
-        Application.Quit();
+        Connection.Instance.StopDiscovering();
+        Connection.Instance.Stop();
+    }
+
+    public void EnableWIFI()
+    {
+        bool enabled = Connection.Instance.setWifiEnabled(true);
+        if (enabled)
+        {
+            wifiDisabledObject.SetActive(false);
+            wifiEnabledObject.SetActive(true);
+        }
     }
 }

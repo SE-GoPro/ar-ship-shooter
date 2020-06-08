@@ -46,9 +46,9 @@ public class PreGameStateManager : StateNotifier
                 if (CurrentState == State.ARRANGE_SHIPS)
                 {
                     OnReady(true);
-                    Dictionary<string, string> dict = new Dictionary<string, string>();
-                    dict.Add("type", "ready");
-                    GameObject.FindGameObjectWithTag("CONNECTION").GetComponent<Connection>().Send(dict);
+                    //Dictionary<string, string> dict = new Dictionary<string, string>();
+                    //dict.Add("type", "ready");
+                    //GameObject.FindGameObjectWithTag("CONNECTION").GetComponent<Connection>().Send(dict);
                     break;
                 }
                 return CurrentState;
