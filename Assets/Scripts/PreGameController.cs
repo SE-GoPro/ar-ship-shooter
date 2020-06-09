@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PreGameController : MonoBehaviour
 {
@@ -45,7 +46,7 @@ public class PreGameController : MonoBehaviour
     {
         PreGameStateManager.instance.RemainingTime--;
         GameObject timer = GameObject.FindGameObjectWithTag("TIMER");
-        timer.GetComponent<TextMeshProUGUI>().text = PreGameStateManager.instance.RemainingTime.ToString() + " s";
+        timer.GetComponent<Text>().text = "( " + PreGameStateManager.instance.RemainingTime.ToString() + "s )";
 
         if (PreGameStateManager.instance.RemainingTime <= 0)
         {
@@ -72,7 +73,8 @@ public class PreGameController : MonoBehaviour
         } else
         {
             CancelInvoke("UpdateRemainingTime");
-            PreGameStateManager.instance.ChangeState(State.WAITING_OP);
+            string serializedShips = FieldMap.GetComponent<FieldMapController>().GetSerializedShips();
+            GameManager.Instance.Ready(serializedShips);
         }
     }
 

@@ -11,10 +11,16 @@ public class Connection : WifiDirectBase
 
     public GameObject MainMenu = null;
     AndroidJavaObject mWiFiManager;
-    public string MyId = SystemInfo.deviceUniqueIdentifier;
+    public string MyId = null;
     public string OpId = null;
     public bool Connected = false;
     public bool isHost = false;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+        MyId = SystemInfo.deviceUniqueIdentifier;
+    }
 
     public static Connection Instance
     {

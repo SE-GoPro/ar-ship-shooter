@@ -94,41 +94,25 @@ class ShipController : MonoBehaviour
         direction = new Direction(dir);
     }
 
-    public Dictionary<string, string> Serialize()
+    public string Serialize()
     {
-        Dictionary<string, string> data = new Dictionary<string, string>();
-        data.Add("rootRow", root.GetComponent<CellController>().row.ToString());
-        data.Add("rootCol", root.GetComponent<CellController>().col.ToString());
-        data.Add("dir", direction.dir.ToString());
-        data.Add("length", length.ToString());
-        data.Add("id", id.ToString());
-        return data;
+        ShipModel model = new ShipModel(
+            root.GetComponent<CellController>().row.ToString(),
+            root.GetComponent<CellController>().col.ToString(),
+            direction.dir.ToString(),
+            length.ToString(),
+            id.ToString()
+        );
+        return JsonUtility.ToJson(model);
     }
 
-    public void UpdateFromDict(Dictionary<string, string> data)
+    public void Deserialize(string json)
     {
         FieldMapController fieldMapColtroller = FieldMap.GetComponent<FieldMapController>();
-        string rootRow;
-        string rootCol;
-        string dir;
-        string length;
-        string id;
-        if (
-            data.TryGetValue("rootRow", out rootRow)
-            && data.TryGetValue("rootCol", out rootCol)
-            && data.TryGetValue("dir", out dir)
-            && data.TryGetValue("length", out length)
-            && data.TryGetValue("id", out id)
-        )
-        {
-            this.root = fieldMapColtroller.mapArr[Int32.Parse(rootRow), Int32.Parse(rootCol)];
-            this.direction = new Direction(Int32.Parse(dir));
-            this.length = Int32.Parse(length);
-            this.id = Int32.Parse(id);
-        }
-        else
-        {
-            Logger.LogError("Can not handle message.");
-        }
+        ShipModel model = JsonUtility.FromJson<ShipModel>(json);
+        this.root = fieldMapColtroller.mapArr[Int32.Parse(model.rootRow), Int32.Parse(model.rootCol)];
+        this.direction = new Direction(Int32.Parse(model.dir));
+        this.length = Int32.Parse(model.length);
+        this.id = Int32.Parse(model.id);
     }
 }

@@ -213,4 +213,23 @@ public class FieldMapController : MonoBehaviour
             }
         }
     }
+
+    public string GetSerializedShips()
+    {
+        string serializedShips = "[";
+        for (int i = 0; i < Constants.SHIP_AMOUNT; i++)
+        {
+            if (shipArr[i] == null)
+            {
+                serializedShips += "null";
+            } else
+            {
+                serializedShips += shipArr[i].GetComponent<ShipController>().Serialize();
+            }
+            serializedShips += ",";
+        }
+        serializedShips.TrimEnd(',');
+        serializedShips += "]";
+        return serializedShips;
+    }
 }

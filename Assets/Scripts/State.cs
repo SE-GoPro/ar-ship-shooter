@@ -15,6 +15,8 @@ public enum State
     IN_GAME = 108,
     POST_GAME = 109,
 
+    BEGIN_BATTLE = 200,
+
     // InGame States
     NEW_TURN = 201,
     PICK_CELL = 202,
