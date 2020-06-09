@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class PreGameController : MonoBehaviour
@@ -14,6 +11,8 @@ public class PreGameController : MonoBehaviour
 
     private GameObject FieldMap;
 
+    private int RemainingTime = Constants.ARRANGE_SHIP_TIME;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +21,7 @@ public class PreGameController : MonoBehaviour
             transform.position,
             Quaternion.identity
         );
+        FieldMap.GetComponent<FieldMapController>().Init();
         GameObject Ship41 = Instantiate(
             Ship4Prefab,
             new Vector3(45, 9, 45),
@@ -37,25 +37,20 @@ public class PreGameController : MonoBehaviour
         Ship31.GetComponent<ShipController>().FieldMap = FieldMap;
         Ship31.GetComponent<ShipController>().id = 1;
 
-        PreGameStateManager.Init();
-        PreGameStateManager.instance.ChangeState(State.ARRANGE_SHIPS);
         InvokeRepeating("UpdateRemainingTime", 1.0f, 1.0f);
     }
 
     private void UpdateRemainingTime()
     {
-        PreGameStateManager.instance.RemainingTime--;
+        RemainingTime--;
         GameObject timer = GameObject.FindGameObjectWithTag("TIMER");
-        timer.GetComponent<Text>().text = "( " + PreGameStateManager.instance.RemainingTime.ToString() + "s )";
+        timer.GetComponent<Text>().text = "( " + RemainingTime.ToString() + "s )";
 
-        if (PreGameStateManager.instance.RemainingTime <= 0)
+        if (RemainingTime <= 0)
         {
             CancelInvoke("UpdateRemainingTime");
-            if (!PreGameStateManager.instance.SelfReady || !PreGameStateManager.instance.OpReady)
-            {
-                Debug.LogError("Someone is not ready");
-                return;
-            }
+            Logger.Log("Time's up!");
+            // TODO: handle time's up
         }
     }
 

@@ -7,12 +7,13 @@ using UnityEngine;
 public class FieldMapController : MonoBehaviour
 {
     public int size = Constants.MAP_SIZE;
+    public float LeftOffset = Constants.LEFT_OFFSET;
+    public float BottomOffset = Constants.BOTTOM_OFFSET;
     public GameObject CellPrefab = null;
     public GameObject[,] mapArr;
     public GameObject[] shipArr;
 
-    // Start is called before the first frame update
-    void Start()
+    public void Init()
     {
         // Init map
         mapArr = new GameObject[Constants.MAP_SIZE, Constants.MAP_SIZE];
@@ -23,9 +24,9 @@ public class FieldMapController : MonoBehaviour
                 GameObject cell = Instantiate(
                     CellPrefab,
                     new Vector3(
-                        col * Constants.CELL_SIZE + Constants.LEFT_OFFSET,
+                        col * Constants.CELL_SIZE + LeftOffset,
                         Constants.CELL_ELEVATION,
-                        row * Constants.CELL_SIZE + Constants.BOTTOM_OFFSET
+                        row * Constants.CELL_SIZE + BottomOffset
                     ),
                     CellPrefab.transform.rotation
                 );
@@ -35,12 +36,6 @@ public class FieldMapController : MonoBehaviour
             }
         }
         shipArr = new GameObject[Constants.SHIP_AMOUNT];
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     Vector2[] GetShipSafeArea(GameObject ship)
@@ -181,8 +176,8 @@ public class FieldMapController : MonoBehaviour
 
     public Vector2 GetCellPosFromShipPos(Vector3 shipPos)
     {
-        float realRow = shipPos.z - Constants.BOTTOM_OFFSET;
-        float realCol = shipPos.x - Constants.LEFT_OFFSET;
+        float realRow = shipPos.z - BottomOffset;
+        float realCol = shipPos.x - LeftOffset;
         int row = (int) Math.Floor(realRow / Constants.CELL_SIZE + 0.5);
         int col = (int) Math.Floor(realCol / Constants.CELL_SIZE + 0.5);
         return new Vector2(row, col);
