@@ -9,6 +9,8 @@ public class InGameController : MonoBehaviour
     public GameObject Ship2Prefab = null;
     public GameObject Ship1Prefab = null;
 
+    public GameObject OverlayManager;
+
     private GameObject MyFieldMap;
     private GameObject OpFieldMap;
 
@@ -17,6 +19,9 @@ public class InGameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Show BEGIN overlay
+        OverlayManager.GetComponent<OverlayManager>().Open("BATTLE BEGIN", 3);
+
         // Init my map
         MyFieldMap = Instantiate(
             FieldMapPrefab,

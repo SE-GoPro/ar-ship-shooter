@@ -7,6 +7,7 @@ TagManager:
   - TIMER
   - LOGGER
   - WIFI_DISABLED
+  - INGAME_TITLE
   layers:
   - Default
   - TransparentFX
