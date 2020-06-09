@@ -8,6 +8,7 @@ TagManager:
   - LOGGER
   - WIFI_DISABLED
   - INGAME_TITLE
+  - SCENE_CONTROLLER
   layers:
   - Default
   - TransparentFX

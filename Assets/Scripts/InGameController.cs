@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class InGameController : MonoBehaviour
@@ -71,5 +72,20 @@ public class InGameController : MonoBehaviour
         );
         Ship231.GetComponent<ShipController>().FieldMap = OpFieldMap;
         Ship231.GetComponent<ShipController>().id = 1;
+
+        // Delay start turn
+        StartCoroutine(DelayStartTurnForSeconds(3));
+    }
+
+    IEnumerator DelayStartTurnForSeconds(float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        GameManager.Instance.BeginTurn();
+    }
+
+    public void StartTurn(bool isMyTurn)
+    {
+        Logger.Log("New Turn: " + (isMyTurn ? "My Turn" : "Op Turn"));
+        OverlayManager.GetComponent<OverlayManager>().Open((isMyTurn ? "YOUR TURN" : "OPPONENT'S TURN"), 3);
     }
 }

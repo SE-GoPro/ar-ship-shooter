@@ -37,6 +37,18 @@ public class WifiDirectBase : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Get device address
+	/// </summary>
+	public string GetDeviceAddress()
+	{
+		if (_wifiDirect != null)
+		{
+			return _wifiDirect.CallStatic<string>("getDeviceAddress");
+		}
+		return null;
+	}
+
+	/// <summary>
 	/// Broadcasts a service for other devices to discover.
 	/// </summary>
 	/// <param name="service">

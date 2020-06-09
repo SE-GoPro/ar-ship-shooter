@@ -60,6 +60,15 @@ public class GameManager : MonoBehaviour
                         break;
                     }
 
+                case State.PICK_CELL:
+                    {
+                        Logger.Log("GameManager: PICK_CELL");
+                        InGameController controller = GameObject.FindGameObjectWithTag(Tags.SCENE_CONTROLLER).GetComponent<InGameController>();
+                        bool isMyTurn = Connection.Instance.MyId.Equals(newState.CurrentTurn);
+                        controller.StartTurn(isMyTurn);
+                        break;
+                    }
+
                 default: break;
             }
         }
@@ -131,5 +140,15 @@ public class GameManager : MonoBehaviour
         newState.CurrentTurn = Connection.Instance.MyId;
         newState.CurrentState = State.BEGIN_BATTLE;
         ChangeState(newState);
+    }
+
+    public void BeginTurn()
+    {
+        if (isHost)
+        {
+            GameState newState = CurrentState.Copy();
+            newState.CurrentState = State.PICK_CELL;
+            ChangeState(newState);
+        }
     }
 }

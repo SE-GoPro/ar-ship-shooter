@@ -85,6 +85,12 @@ public class Connection : WifiDirectBase
     //On finding a service
     public override void OnServiceFound(string addr)
     {
+        Logger.Log(base.GetDeviceAddress());
+        // Ignore if same as own device
+        if (base.GetDeviceAddress().Equals(addr))
+        {
+            return;
+        }
         Logger.Log("Connection: OnServiceFound - " + addr);
         // Auto-connect
         MakeConnection(addr);
