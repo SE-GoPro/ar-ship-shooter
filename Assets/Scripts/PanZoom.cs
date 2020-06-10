@@ -5,7 +5,7 @@ public class PanZoom : MonoBehaviour
 {
 
     private static readonly float PanSpeed = 100f;
-    private static readonly float ZoomSpeedTouch = 1.0f;
+    private static readonly float ZoomSpeedTouch = 0.1f;
     private static readonly float ZoomSpeedMouse = 2.0f;
 
     private static readonly float[] BoundsX = new float[] { -50f, 50f };

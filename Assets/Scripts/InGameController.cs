@@ -14,6 +14,7 @@ public class InGameController : MonoBehaviour
 
     public GameObject OverlayManager;
     public HUDController HUDManager;
+    public GameObject CanvasObject;
 
     private GameObject MyFieldMap;
     private GameObject OpFieldMap;
@@ -28,6 +29,8 @@ public class InGameController : MonoBehaviour
 
         InitSelf();
         InitOp();
+
+        CanvasObject.GetComponent<Transform>().SetAsLastSibling();
 
         // Delay start turn
         StartCoroutine(DelayStartTurnForSeconds(3));
@@ -66,9 +69,7 @@ public class InGameController : MonoBehaviour
             );
             ship.GetComponent<ShipController>().FieldMap = MyFieldMap;
             ship.GetComponent<ShipController>().id = shipModel.id;
-            Color color;
-            ColorUtility.TryParseHtmlString(Constants.SHIP_COLOR_BLUE, out color);
-            ship.GetComponent<Renderer>().material.color = color;
+            ship.GetComponent<ShipController>().UpdateColor(GameManager.Instance.isHost);
             ship.GetComponent<ShipController>().FixedPos();
             // We don't need ship's Box Collider for InGame
             Destroy(ship.GetComponent<BoxCollider>());
@@ -109,9 +110,7 @@ public class InGameController : MonoBehaviour
             );
             ship.GetComponent<ShipController>().FieldMap = OpFieldMap;
             ship.GetComponent<ShipController>().id = shipModel.id;
-            Color color;
-            ColorUtility.TryParseHtmlString(Constants.SHIP_COLOR_RED, out color);
-            ship.GetComponent<Renderer>().material.color = color;
+            ship.GetComponent<ShipController>().UpdateColor(!GameManager.Instance.isHost);
             ship.GetComponent<ShipController>().FixedPos();
             // We don't need ship's Box Collider for InGame
             Destroy(ship.GetComponent<BoxCollider>());

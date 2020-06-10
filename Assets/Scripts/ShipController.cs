@@ -165,4 +165,12 @@ class ShipController : MonoBehaviour
         this.length = model.length;
         this.id = model.id;
     }
+
+    public void UpdateColor(bool isHost)
+    {
+        Color color;
+        string colorCode = isHost ? Constants.SHIP_COLOR_BLUE : Constants.SHIP_COLOR_RED;
+        ColorUtility.TryParseHtmlString(colorCode, out color);
+        GetComponent<Renderer>().material.color = color;
+    }
 }
