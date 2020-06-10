@@ -12,12 +12,19 @@ public class FieldMapController : MonoBehaviour
     public GameObject CellPrefab = null;
     public GameObject[,] mapArr;
     public GameObject[] shipArr;
+    public GameObject[] allShips;
 
     public GameObject SceneController;
 
     public GameObject SelectedCell = null;
     public bool IsMyField = false;
     public bool Selectable = false;
+
+    public void Awake()
+    {
+        // Init ships
+        allShips = new GameObject[Constants.SHIP_AMOUNT];
+    }
 
     public void Init()
     {
@@ -217,6 +224,39 @@ public class FieldMapController : MonoBehaviour
                 mapArr[row, col].GetComponent<CellController>().ChangeStatus(CellStatus.NORMAL);
             }
         }
+    }
+
+    public void AutoArrangeShips()
+    {
+        // reset all arranged ships
+        foreach (GameObject ship in shipArr)
+        {
+            if (ship != null)
+            {
+                ship.GetComponent<ShipController>().ResetShip();
+            }
+        }
+        foreach (GameObject ship in allShips)
+        {
+            ShipController shipCon = ship.GetComponent<ShipController>();
+            System.Random rand = new System.Random();
+
+            int ranDir = 1;
+            int randomRow = 0;
+            int randomCol = 0;
+            bool isValid = false;
+            while (!isValid)
+            {
+                ranDir = rand.Next(4) + 1;
+                randomRow = rand.Next(Constants.MAP_SIZE);
+                randomCol = rand.Next(Constants.MAP_SIZE);
+                shipCon.SetDirection(ranDir);
+                GameObject cell = mapArr[randomCol, randomRow];
+                isValid = CheckValidShipPos(ship, new Vector2(randomRow, randomCol));
+            }
+            shipCon.SetShipToMap(randomRow, randomCol, ranDir);
+        }
+        ResetCellStatus();
     }
 
     public string GetSerializedShips()

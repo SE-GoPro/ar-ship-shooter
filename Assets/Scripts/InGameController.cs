@@ -61,7 +61,7 @@ public class InGameController : MonoBehaviour
 
             GameObject ship = Instantiate(
                 prefab,
-                new Vector3(0, 0, 0),
+                new Vector3(0, 9, 0),
                 prefab.transform.rotation
             );
             ship.GetComponent<ShipController>().FieldMap = MyFieldMap;
@@ -101,7 +101,7 @@ public class InGameController : MonoBehaviour
 
             GameObject ship = Instantiate(
                 prefab,
-                new Vector3(0, 0, 0),
+                new Vector3(0, 9, 0),
                 prefab.transform.rotation
             );
             ship.GetComponent<ShipController>().FieldMap = OpFieldMap;

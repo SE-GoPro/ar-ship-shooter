@@ -51,6 +51,7 @@ public class PreGameController : MonoBehaviour
         );
         ship.GetComponent<ShipController>().FieldMap = FieldMap;
         ship.GetComponent<ShipController>().id = id;
+        FieldMap.GetComponent<FieldMapController>().allShips[id] = ship;
     }
 
     private void UpdateRemainingTime()
@@ -88,6 +89,6 @@ public class PreGameController : MonoBehaviour
 
     public void AutoGenShip()
     {
-
+        FieldMap.GetComponent<FieldMapController>().AutoArrangeShips();
     }
 }

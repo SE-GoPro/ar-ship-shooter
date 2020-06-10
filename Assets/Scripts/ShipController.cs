@@ -99,9 +99,7 @@ class ShipController : MonoBehaviour
         bool isValid = fieldMapColtroller.CheckValidShipPos(gameObject, pos);
         if (!isValid)
         {
-            transform.position = InitialPosition;
-            fieldMapColtroller.RemoveShipFromArray(gameObject);
-            RotateButton.gameObject.SetActive(true);
+            ResetShip();
         } else
         {
             GameObject cell = fieldMapColtroller.GetCellByPos(pos);
@@ -117,18 +115,27 @@ class ShipController : MonoBehaviour
         fieldMapColtroller.ResetCellStatus();
     }
 
+    public void ResetShip()
+    {
+        FieldMapController fieldMapColtroller = FieldMap.GetComponent<FieldMapController>();
+        transform.position = InitialPosition;
+        fieldMapColtroller.RemoveShipFromArray(gameObject);
+        RotateButton.gameObject.SetActive(true);
+    }
+
     public void SetShipToMap(int row, int col, int dir)
     {
         FieldMapController fieldMapColtroller = FieldMap.GetComponent<FieldMapController>();
         GameObject cell = fieldMapColtroller.GetCellByPos(row, col);
         transform.position = new Vector3(
             cell.transform.position.x,
-            Constants.CELL_ELEVATION,
+            transform.position.y,
             cell.transform.position.z
         );
         SetDirection(dir);
         root = cell;
         fieldMapColtroller.SetShipIntoArray(gameObject);
+        RotateButton.gameObject.SetActive(false);
     }
 
     public void SetDirection(int dir)
