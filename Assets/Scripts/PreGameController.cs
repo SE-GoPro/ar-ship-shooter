@@ -22,20 +22,6 @@ public class PreGameController : MonoBehaviour
             Quaternion.identity
         );
         FieldMap.GetComponent<FieldMapController>().Init();
-        //GameObject Ship41 = Instantiate(
-        //    Ship4Prefab,
-        //    new Vector3(45, 9, 45),
-        //    Ship4Prefab.transform.rotation
-        //);
-        //Ship41.GetComponent<ShipController>().FieldMap = FieldMap;
-        //Ship41.GetComponent<ShipController>().id = 0;
-        //GameObject Ship31 = Instantiate(
-        //    Ship3Prefab,
-        //    new Vector3(70, 9, 45),
-        //    Ship3Prefab.transform.rotation
-        //);
-        //Ship31.GetComponent<ShipController>().FieldMap = FieldMap;
-        //Ship31.GetComponent<ShipController>().id = 1;
         InitShip(0, 4, new Vector3(18, 9, 34.5f));
         InitShip(1, 3, new Vector3(38, 9, 34.5f));
         InitShip(2, 3, new Vector3(58, 9, 34.5f));
@@ -100,5 +86,8 @@ public class PreGameController : MonoBehaviour
         }
     }
 
+    public void AutoGenShip()
+    {
 
+    }
 }

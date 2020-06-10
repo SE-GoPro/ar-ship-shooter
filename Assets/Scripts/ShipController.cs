@@ -14,6 +14,7 @@ class ShipController : MonoBehaviour
     public int id;
     public GameObject FieldMap;
     public GameObject RotateButton;
+    public int Attacked = 0;
 
     [SerializeField]
     public UnityEvent OnBeginDrag;

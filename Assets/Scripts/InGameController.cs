@@ -110,6 +110,7 @@ public class InGameController : MonoBehaviour
             // We don't need ship's Box Collider for InGame
             Destroy(ship.GetComponent<BoxCollider>());
             ship.GetComponent<ShipController>().SetShipToMap(shipModel.rootRow, shipModel.rootCol, shipModel.dir);
+            ship.SetActive(false);
         }
     }
 

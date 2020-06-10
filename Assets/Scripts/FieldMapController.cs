@@ -281,7 +281,18 @@ public class FieldMapController : MonoBehaviour
             // If cell has ship
             cellCon.HasShip = true;
             GameObject ship = GetComponent<FieldMapController>().shipArr[ShipIdAtCell];
-            // TODO: check if whole ship destroyed -> show ship
+            ship.GetComponent<ShipController>().Attacked++;
+            if (ship.GetComponent<ShipController>().Attacked == ship.GetComponent<ShipController>().length)
+            {
+                ship.SetActive(true);
+                // Show explosion
+                Vector2[] cellsPos = GetCellsInShip(ship.GetComponent<ShipController>());
+                foreach (Vector2 cellPos in cellsPos)
+                {
+                    GameObject currentCell = mapArr[(int)cellPos.x, (int)cellPos.y];
+                    currentCell.GetComponent<CellController>().Boom.GetComponent<ParticleSystem>().Play();
+                }
+            }
             StartCoroutine(DelayDecreaseHealth(-1, 2));
         }
         cellCon.ChangeStatus(CellStatus.FIRED);
