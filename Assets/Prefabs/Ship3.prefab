@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -876546973899608171, guid: a43a2ab6e7a714cdca9e8275b7416648, type: 3}
+  - {fileID: 2100000, guid: f5d9e525ab2bf4f708a90d07115a1538, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -113,6 +113,7 @@ MonoBehaviour:
   id: 0
   FieldMap: {fileID: 0}
   RotateButton: {fileID: 666564757250988559}
+  Attacked: 0
   OnBeginDrag:
     m_PersistentCalls:
       m_Calls: []

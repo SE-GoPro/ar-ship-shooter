@@ -14,6 +14,8 @@ public class Constants
     public const string CELL_COLOR_SELECTED = "#7AC637FF";
     public const string CELL_COLOR_FIRING = "#525252FF";
     public const string CELL_COLOR_GREYED = "#525252FF";
+    public const string SHIP_COLOR_RED = "#EC5800FF";
+    public const string SHIP_COLOR_BLUE = "#00C3ECFF";
     public const int SHIP_AMOUNT = 10;
     public const int MAX_HP = 20;
     public const int EMPTY_CELL_ID = -1;

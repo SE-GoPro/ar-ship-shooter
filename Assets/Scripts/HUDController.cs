@@ -29,9 +29,12 @@ public class HUDController : MonoBehaviour
         HUDTimer.GetComponent<Text>().text = seconds.ToString();
     }
 
-    public void ChangeDescription()
+    public void ChangeDescription(bool isMyTurn)
     {
-        // TODO
+        string text = isMyTurn
+            ? "Choose one cell from enemy's area to attack"
+            : "Wait for opponent to attack";
+        HUDDescription.GetComponent<Text>().text = text;
     }
 
     public void UpdateHp(int hp, bool isMyHp)

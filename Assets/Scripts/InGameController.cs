@@ -66,6 +66,9 @@ public class InGameController : MonoBehaviour
             );
             ship.GetComponent<ShipController>().FieldMap = MyFieldMap;
             ship.GetComponent<ShipController>().id = shipModel.id;
+            Color color;
+            ColorUtility.TryParseHtmlString(Constants.SHIP_COLOR_BLUE, out color);
+            ship.GetComponent<Renderer>().material.color = color;
             ship.GetComponent<ShipController>().FixedPos();
             // We don't need ship's Box Collider for InGame
             Destroy(ship.GetComponent<BoxCollider>());
@@ -106,6 +109,9 @@ public class InGameController : MonoBehaviour
             );
             ship.GetComponent<ShipController>().FieldMap = OpFieldMap;
             ship.GetComponent<ShipController>().id = shipModel.id;
+            Color color;
+            ColorUtility.TryParseHtmlString(Constants.SHIP_COLOR_RED, out color);
+            ship.GetComponent<Renderer>().material.color = color;
             ship.GetComponent<ShipController>().FixedPos();
             // We don't need ship's Box Collider for InGame
             Destroy(ship.GetComponent<BoxCollider>());
@@ -127,11 +133,11 @@ public class InGameController : MonoBehaviour
         Logger.Log("New Turn: " + text);
         OverlayManager.GetComponent<OverlayManager>().Open(text, 2);
         HUDManager.ChangeTitle(isMyTurn);
+        HUDManager.ChangeDescription(isMyTurn);
         if (isMyTurn)
         {
             OpFieldMap.GetComponent<FieldMapController>().Selectable = true;
         }
-        // dosomething
     }
 
     public void Attack()

@@ -51,6 +51,9 @@ public class PreGameController : MonoBehaviour
         );
         ship.GetComponent<ShipController>().FieldMap = FieldMap;
         ship.GetComponent<ShipController>().id = id;
+        Color color;
+        ColorUtility.TryParseHtmlString(Constants.SHIP_COLOR_BLUE, out color);
+        ship.GetComponent<Renderer>().material.color = color;
         FieldMap.GetComponent<FieldMapController>().allShips[id] = ship;
     }
 
