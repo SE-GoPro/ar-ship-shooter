@@ -22,22 +22,49 @@ public class PreGameController : MonoBehaviour
             Quaternion.identity
         );
         FieldMap.GetComponent<FieldMapController>().Init();
-        GameObject Ship41 = Instantiate(
-            Ship4Prefab,
-            new Vector3(45, 9, 45),
-            Ship4Prefab.transform.rotation
-        );
-        Ship41.GetComponent<ShipController>().FieldMap = FieldMap;
-        Ship41.GetComponent<ShipController>().id = 0;
-        GameObject Ship31 = Instantiate(
-            Ship3Prefab,
-            new Vector3(70, 9, 45),
-            Ship3Prefab.transform.rotation
-        );
-        Ship31.GetComponent<ShipController>().FieldMap = FieldMap;
-        Ship31.GetComponent<ShipController>().id = 1;
+        //GameObject Ship41 = Instantiate(
+        //    Ship4Prefab,
+        //    new Vector3(45, 9, 45),
+        //    Ship4Prefab.transform.rotation
+        //);
+        //Ship41.GetComponent<ShipController>().FieldMap = FieldMap;
+        //Ship41.GetComponent<ShipController>().id = 0;
+        //GameObject Ship31 = Instantiate(
+        //    Ship3Prefab,
+        //    new Vector3(70, 9, 45),
+        //    Ship3Prefab.transform.rotation
+        //);
+        //Ship31.GetComponent<ShipController>().FieldMap = FieldMap;
+        //Ship31.GetComponent<ShipController>().id = 1;
+        InitShip(0, 4, new Vector3(18, 9, 34.5f));
+        InitShip(1, 3, new Vector3(38, 9, 34.5f));
+        InitShip(2, 3, new Vector3(58, 9, 34.5f));
+        InitShip(3, 2, new Vector3(78, 9, 34.5f));
+        InitShip(4, 2, new Vector3(18, 9, -12.0f));
+        InitShip(5, 2, new Vector3(38, 9, -12.0f));
+        InitShip(6, 1, new Vector3(58, 9, -12.0f));
+        InitShip(7, 1, new Vector3(18, 9, -40.0f));
+        InitShip(8, 1, new Vector3(38, 9, -40.0f));
+        InitShip(9, 1, new Vector3(58, 9, -40.0f));
 
         InvokeRepeating("UpdateRemainingTime", 1.0f, 1.0f);
+    }
+
+    private void InitShip(int id, int length, Vector3 initialPos)
+    {
+        GameObject prefab = Ship1Prefab;
+        if (length == 1) prefab = Ship1Prefab;
+        if (length == 2) prefab = Ship2Prefab;
+        if (length == 3) prefab = Ship3Prefab;
+        if (length == 4) prefab = Ship4Prefab;
+
+        GameObject ship = Instantiate(
+            prefab,
+            initialPos,
+            prefab.transform.rotation
+        );
+        ship.GetComponent<ShipController>().FieldMap = FieldMap;
+        ship.GetComponent<ShipController>().id = id;
     }
 
     private void UpdateRemainingTime()

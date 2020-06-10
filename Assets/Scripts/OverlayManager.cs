@@ -25,6 +25,7 @@ public class OverlayManager : MonoBehaviour
         AnimatorController.gameObject.SetActive(true);
         AnimatorController.SetBool(OPEN_PARAM_ID, true);
         TitleLabel.GetComponent<Text>().text = text;
+        Logger.Log("OverlayManager: Open - " + text);
     }
 
     public void Open(string text, float wait)
@@ -35,7 +36,7 @@ public class OverlayManager : MonoBehaviour
 
     public void Close()
     {
-        Debug.Log("Close");
+        Logger.Log("OverlayManager: Closing");
         AnimatorController.SetBool(OPEN_PARAM_ID, false);
         StartCoroutine(DelayCloseForAnimation());
     }
@@ -57,6 +58,7 @@ public class OverlayManager : MonoBehaviour
         if (wantToClose)
         {
             AnimatorController.gameObject.SetActive(false);
+            Logger.Log("OverlayManager: Closed");
         }
     }
 

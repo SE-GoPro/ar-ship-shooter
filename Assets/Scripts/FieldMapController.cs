@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class FieldMapController : MonoBehaviour
 {
@@ -12,6 +12,12 @@ public class FieldMapController : MonoBehaviour
     public GameObject CellPrefab = null;
     public GameObject[,] mapArr;
     public GameObject[] shipArr;
+
+    public GameObject SceneController;
+
+    public GameObject SelectedCell = null;
+    public bool IsMyField = false;
+    public bool Selectable = false;
 
     public void Init()
     {
@@ -32,6 +38,7 @@ public class FieldMapController : MonoBehaviour
                 );
                 cell.GetComponent<CellController>().row = row;
                 cell.GetComponent<CellController>().col = col;
+                cell.GetComponent<CellController>().fieldMap = this.gameObject;
                 mapArr[row, col] = cell;
             }
         }
@@ -55,7 +62,6 @@ public class FieldMapController : MonoBehaviour
                 }
             }
         }
-        // TODO: check if true
         Vector2[] finalSurroundedCells = new HashSet<Vector2>(surroundedCells).ToArray();
         return finalSurroundedCells;
     }
@@ -92,8 +98,7 @@ public class FieldMapController : MonoBehaviour
         {
             for (int col = 0; col < size; col++)
             {
-                numMapArr[row, col] = -1;
-                mapArr[row, col].GetComponent<CellController>().ChangeStatus(CellStatus.NORMAL);
+                numMapArr[row, col] = Constants.EMPTY_CELL_ID;
             }
         }
         foreach (GameObject ship in shipArr)
@@ -150,7 +155,7 @@ public class FieldMapController : MonoBehaviour
             }
             else
             {
-                if (numMapArr[(int)cell.x, (int)cell.y] != -1)
+                if (numMapArr[(int)cell.x, (int)cell.y] != Constants.EMPTY_CELL_ID)
                 {
                     isValid = false;
                 }
@@ -188,6 +193,11 @@ public class FieldMapController : MonoBehaviour
         return mapArr[(int)pos.x, (int)pos.y];
     }
 
+    public GameObject GetCellByPos(int row, int col)
+    {
+        return mapArr[row, col];
+    }
+
     public void SetShipIntoArray(GameObject ship)
     {
         shipArr[ship.GetComponent<ShipController>().id] = ship;
@@ -221,10 +231,65 @@ public class FieldMapController : MonoBehaviour
             {
                 serializedShips += shipArr[i].GetComponent<ShipController>().Serialize();
             }
-            serializedShips += ",";
+            serializedShips += "|";
         }
-        serializedShips.TrimEnd(',');
+        serializedShips = serializedShips.Trim('|');
         serializedShips += "]";
         return serializedShips;
+    }
+
+    public ShipModel[] DeserializeShips(string serializedShips)
+    {
+        serializedShips = serializedShips.Trim('[');
+        serializedShips = serializedShips.Trim(']');
+        string[] serializedShip = serializedShips.Split('|');
+        ShipModel[] shipsModels = serializedShip.Select(item => JsonUtility.FromJson<ShipModel>(item)).ToArray();
+        return shipsModels;
+    }
+
+    public void SelectCell(GameObject cell)
+    {
+        UnselectSelectedCell();
+        SelectedCell = cell;
+        SelectedCell.GetComponent<CellController>().ChangeStatus(CellStatus.SELECTED);
+        SceneController.GetComponent<InGameController>().HUDManager.GetComponent<HUDController>().HUDAttackButton.SetActive(true);
+    }
+
+    public void UnselectSelectedCell()
+    {
+        if (SelectedCell != null)
+        {
+            SelectedCell.GetComponent<CellController>().ChangeStatus(CellStatus.NORMAL);
+            SelectedCell = null;
+            SceneController.GetComponent<InGameController>().HUDManager.GetComponent<HUDController>().HUDAttackButton.SetActive(false);
+        }
+    }
+
+    public void CheckDestroyCell(GameObject cell)
+    {
+        Logger.Log("FieldMap: CheckDestroyCell");
+        CellController cellCon = cell.GetComponent<CellController>();
+        cellCon.Fired = true;
+        int[,] numMapArr = GetNumericMap();
+        int ShipIdAtCell = numMapArr[cellCon.row, cellCon.col];
+        if (ShipIdAtCell == Constants.EMPTY_CELL_ID)
+        {
+            // If empty cell
+            StartCoroutine(DelayDecreaseHealth(0, 2));
+        } else
+        {
+            // If cell has ship
+            cellCon.HasShip = true;
+            GameObject ship = GetComponent<FieldMapController>().shipArr[ShipIdAtCell];
+            // TODO: check if whole ship destroyed -> show ship
+            StartCoroutine(DelayDecreaseHealth(-1, 2));
+        }
+        cellCon.ChangeStatus(CellStatus.FIRED);
+    }
+
+    IEnumerator DelayDecreaseHealth(int offset, float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        GameManager.Instance.DecreaseHealth(offset, IsMyField);
     }
 }

@@ -92,8 +92,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d14c4865d5f1040ac97ac31e4a69e965, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UvRotateSpeed: 0.4
+  UvRotateSpeed: 3
   UvRotateDistance: 2
-  UvBumpRotateSpeed: 0.4
+  UvBumpRotateSpeed: 3
   UvBumpRotateDistance: 2
   depthTextureModeOn: 1

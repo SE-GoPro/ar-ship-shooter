@@ -10,7 +10,7 @@ public class PanZoom : MonoBehaviour
 
     private static readonly float[] BoundsX = new float[] { -50f, 50f };
     private static readonly float[] BoundsZ = new float[] { -420f, -330f };
-    private static readonly float[] ZoomBounds = new float[] { 50f, 75f };
+    private static readonly float[] ZoomBounds = new float[] { 30f, 75f };
 
     private Camera cam;
 

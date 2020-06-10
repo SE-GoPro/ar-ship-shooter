@@ -85,7 +85,6 @@ public class Connection : WifiDirectBase
     //On finding a service
     public override void OnServiceFound(string addr)
     {
-        Logger.Log(base.GetDeviceAddress());
         // Ignore if same as own device
         if (base.GetDeviceAddress().Equals(addr))
         {
@@ -131,13 +130,18 @@ public class Connection : WifiDirectBase
                         if (String.Compare(MyId, OpId) < 0)
                         {
                             isHost = false;
-                            base.Send(new Message(MessageTypes.GRANT_HOST, null));
+                            StartCoroutine(DelayForOpReceiveId(2));
                         }
                         break;
                     }
 
                 case (MessageTypes.GRANT_HOST):
                     {
+                        if (OpId == null)
+                        {
+                            Logger.Log("Connection: retrieve OpId from GRANT_HOST");
+                            OpId = message.data;
+                        }
                         isHost = true;
                         GameManager.Instance.isHost = true;
                         GameManager.Instance.StartGame();
@@ -154,6 +158,12 @@ public class Connection : WifiDirectBase
                 default: break;
             }
         }
+    }
+
+    IEnumerator DelayForOpReceiveId(float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        base.Send(new Message(MessageTypes.GRANT_HOST, MyId));
     }
 
     //Kill Switch

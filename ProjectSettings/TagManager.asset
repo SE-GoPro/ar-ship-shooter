@@ -9,6 +9,7 @@ TagManager:
   - WIFI_DISABLED
   - INGAME_TITLE
   - SCENE_CONTROLLER
+  - FIRE_BALL
   layers:
   - Default
   - TransparentFX

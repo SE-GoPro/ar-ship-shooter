@@ -24,6 +24,7 @@ public class Water : MonoBehaviour
     public float UvBumpRotateSpeed = 0.4f;
     public float UvBumpRotateDistance = 2.0f;
     public bool depthTextureModeOn = true;
+    public bool Enabled = true;
 
     //---------------------------------
 
@@ -62,19 +63,22 @@ public class Water : MonoBehaviour
 
     void Update()
     {
-        //---------------------------------
+        if (Enabled)
+        {
+            //---------------------------------
 
-        lwVector = Quaternion.AngleAxis(Time.time * UvRotateSpeed, Vector3.forward) * Vector2.one * UvRotateDistance;
-        lwNVector = Quaternion.AngleAxis(Time.time * UvBumpRotateSpeed, Vector3.forward) * Vector2.one * UvBumpRotateDistance;
+            lwVector = Quaternion.AngleAxis(Time.time * UvRotateSpeed, Vector3.forward) * Vector2.one * UvRotateDistance;
+            lwNVector = Quaternion.AngleAxis(Time.time * UvBumpRotateSpeed, Vector3.forward) * Vector2.one * UvBumpRotateDistance;
 
-        //---------------------------------
+            //---------------------------------
 
-        Shader.SetGlobalFloat("_WaterLocalUvX", lwVector.x);
-        Shader.SetGlobalFloat("_WaterLocalUvZ", lwVector.y);
-        Shader.SetGlobalFloat("_WaterLocalUvNX", lwNVector.x);
-        Shader.SetGlobalFloat("_WaterLocalUvNZ", lwNVector.y);
+            Shader.SetGlobalFloat("_WaterLocalUvX", lwVector.x);
+            Shader.SetGlobalFloat("_WaterLocalUvZ", lwVector.y);
+            Shader.SetGlobalFloat("_WaterLocalUvNX", lwNVector.x);
+            Shader.SetGlobalFloat("_WaterLocalUvNZ", lwNVector.y);
 
-        //---------------------------------
+            //---------------------------------
+        }
     }
 
 
