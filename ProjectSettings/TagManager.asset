@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - TIMER
+  - LOGGER
+  - WIFI_DISABLED
+  - INGAME_TITLE
+  - SCENE_CONTROLLER
+  - FIRE_BALL
   layers:
   - Default
   - TransparentFX
