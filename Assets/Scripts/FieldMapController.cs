@@ -315,7 +315,7 @@ public class FieldMapController : MonoBehaviour
         if (ShipIdAtCell == Constants.EMPTY_CELL_ID)
         {
             // If empty cell
-            StartCoroutine(DelayDecreaseHealth(0, 2));
+            StartCoroutine(DelayDecreaseHealth(0, 1));
         } else
         {
             // If cell has ship
@@ -333,7 +333,7 @@ public class FieldMapController : MonoBehaviour
                     currentCell.GetComponent<CellController>().Boom.GetComponent<ParticleSystem>().Play();
                 }
             }
-            StartCoroutine(DelayDecreaseHealth(-1, 2));
+            StartCoroutine(DelayDecreaseHealth(-1, 1));
         }
         cellCon.ChangeStatus(CellStatus.FIRED);
     }

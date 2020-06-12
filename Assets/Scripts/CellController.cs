@@ -93,8 +93,8 @@ public class CellController : MonoBehaviour
                     break;
                 }
         }
-        CellPlane.GetComponent<Renderer>().material.color = color;
-        //CellPlane.GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
+        //CellPlane.GetComponent<Renderer>().material.color = color;
+        CellPlane.GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
     }
 
     private void OnMouseUpAsButton()

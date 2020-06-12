@@ -184,7 +184,7 @@ public class WifiDirectBase : MonoBehaviour {
 	/// <summary>
 	/// Called when connected to a client
 	/// </summary>
-	public virtual void OnConnect () {
+	public virtual void OnConnect (string addr) {
 		
 	}
 

@@ -14,7 +14,6 @@ public class InGameController : MonoBehaviour
 
     public GameObject OverlayManager;
     public HUDController HUDManager;
-    public GameObject CanvasObject;
 
     private GameObject MyFieldMap;
     private GameObject OpFieldMap;
@@ -29,8 +28,6 @@ public class InGameController : MonoBehaviour
 
         InitSelf();
         InitOp();
-
-        CanvasObject.GetComponent<Transform>().SetAsLastSibling();
 
         // Delay start turn
         StartCoroutine(DelayStartTurnForSeconds(3));

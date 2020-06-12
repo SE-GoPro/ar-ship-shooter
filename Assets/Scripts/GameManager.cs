@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
                     {
                         Logger.Log("GameManager: CHANGE_TURN");
                         // Short delay before starting new turn
-                        StartCoroutine(DelayBeginTurn(2));
+                        StartCoroutine(DelayBeginTurn(1));
                         break;
                     }
 
