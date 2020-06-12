@@ -27,7 +27,6 @@ public class MainMenu : MonoBehaviour
             wifiDisabledObject.SetActive(true);
             wifiEnabledObject.SetActive(false);
         }
-        //StateManager.instance.ChangeState(State.FINDING_NEARBY);
     }
 
     public void StopPlaying()

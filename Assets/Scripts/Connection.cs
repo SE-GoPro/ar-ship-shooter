@@ -129,20 +129,28 @@ public class Connection : WifiDirectBase
     }
 
     //When connected
-    public override void OnConnect(string addr)
+    //public override void OnConnect(string addr)
+    public override void OnConnect()
     {
+        string addr = "";
         if (!Connected)
         {
             Logger.Log("Connection: OnConnect - Connected to " + addr);
             Connected = true;
             base.StopDiscovering();
             Logger.Log("Connection: StopDiscovering");
-            base.Send(new Message(MessageTypes.SEND_ID, MyId));
+            StartCoroutine(DelaySendId(1));
         }
         else
         {
             Logger.Log("Connection: OnConnect - Connected to " + addr + " before, ignoring...");
         }
+    }
+
+    IEnumerator DelaySendId(float wait)
+    {
+        yield return new WaitForSeconds(wait);
+        base.Send(new Message(MessageTypes.SEND_ID, MyId));
     }
 
     //When recieving a new message, parse the color and set it to the cube
