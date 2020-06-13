@@ -11,6 +11,9 @@ public class PreGameController : MonoBehaviour
 
     private GameObject FieldMap;
 
+    public GameObject Water = null;
+    public GameObject SettingsManager = null;
+
     private int RemainingTime = Constants.ARRANGE_SHIP_TIME;
 
     // Start is called before the first frame update
@@ -32,6 +35,22 @@ public class PreGameController : MonoBehaviour
         InitShip(7, 1, new Vector3(18, 9, -40.0f));
         InitShip(8, 1, new Vector3(38, 9, -40.0f));
         InitShip(9, 1, new Vector3(58, 9, -40.0f));
+
+        // Set up water quality
+        int waterQuality = (int) SettingsManager.GetComponent<SettingsManager>().WaterQuality;
+        //if (waterQuality >= 2)
+        //{
+        //    Water.GetComponent<Water>()
+        //}
+        //if (waterQuality == 2)
+        //{
+        //    Water.GetComponent<Water>()
+        //    Water.GetComponent<Water>().Enabled = false;
+        //}
+        //else if (waterQuality == 1)
+        //{
+
+        //}
 
         InvokeRepeating("UpdateRemainingTime", 1.0f, 1.0f);
     }
