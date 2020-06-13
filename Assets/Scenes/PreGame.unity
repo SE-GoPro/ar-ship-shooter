@@ -282,7 +282,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &263652196
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -397,8 +397,8 @@ MonoBehaviour:
     type: 3}
   Ship1Prefab: {fileID: 5260300272239539572, guid: 7f6464bce393e4010a24f673602af3b3,
     type: 3}
-  WaterHigh: {fileID: 0}
-  WaterLow: {fileID: 0}
+  WaterHigh: {fileID: 431303663}
+  WaterLow: {fileID: 263652195}
   SettingsManager: {fileID: 1623191061}
 --- !u!4 &334422894
 Transform:
@@ -538,7 +538,7 @@ PrefabInstance:
     - target: {fileID: -927199367670048503, guid: 3374ebf6f2d0a4aec9769541a2033c93,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3374ebf6f2d0a4aec9769541a2033c93, type: 3}
