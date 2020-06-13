@@ -11,7 +11,8 @@ public class PreGameController : MonoBehaviour
 
     private GameObject FieldMap;
 
-    public GameObject Water = null;
+    public GameObject WaterHigh = null;
+    public GameObject WaterLow = null;
     public GameObject SettingsManager = null;
 
     private int RemainingTime = Constants.ARRANGE_SHIP_TIME;
@@ -38,19 +39,23 @@ public class PreGameController : MonoBehaviour
 
         // Set up water quality
         int waterQuality = (int) SettingsManager.GetComponent<SettingsManager>().WaterQuality;
-        //if (waterQuality >= 2)
-        //{
-        //    Water.GetComponent<Water>()
-        //}
-        //if (waterQuality == 2)
-        //{
-        //    Water.GetComponent<Water>()
-        //    Water.GetComponent<Water>().Enabled = false;
-        //}
-        //else if (waterQuality == 1)
-        //{
-
-        //}
+        if (waterQuality >= 2)
+        {
+            WaterHigh.SetActive(true);
+            WaterLow.SetActive(false);
+        } else
+        {
+            WaterHigh.SetActive(false);
+            WaterLow.SetActive(true);
+        }
+        if (waterQuality == 2)
+        {
+            WaterHigh.GetComponent<Water>().Enabled = false;
+        }
+        if (waterQuality == 3)
+        {
+            WaterHigh.GetComponent<Water>().Enabled = true;
+        }
 
         InvokeRepeating("UpdateRemainingTime", 1.0f, 1.0f);
     }
