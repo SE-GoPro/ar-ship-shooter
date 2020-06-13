@@ -18,11 +18,36 @@ public class InGameController : MonoBehaviour
     private GameObject MyFieldMap;
     private GameObject OpFieldMap;
 
+    public GameObject WaterHigh = null;
+    public GameObject WaterLow = null;
+    public GameObject SettingsManager = null;
+
     private int RemainingTime = Constants.ARRANGE_SHIP_TIME;
 
     // Start is called before the first frame update
     void Start()
     {
+        // Set up water quality
+        int waterQuality = (int)SettingsManager.GetComponent<SettingsManager>().WaterQuality;
+        if (waterQuality >= 2)
+        {
+            WaterHigh.SetActive(true);
+            WaterLow.SetActive(false);
+        }
+        else
+        {
+            WaterHigh.SetActive(false);
+            WaterLow.SetActive(true);
+        }
+        if (waterQuality == 2)
+        {
+            WaterHigh.GetComponent<Water>().Enabled = false;
+        }
+        if (waterQuality == 3)
+        {
+            WaterHigh.GetComponent<Water>().Enabled = true;
+        }
+
         // Show BEGIN overlay
         OverlayManager.GetComponent<OverlayManager>().Open("BATTLE BEGIN", 2);
 
