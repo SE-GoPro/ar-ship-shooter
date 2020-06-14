@@ -16,6 +16,8 @@ public class SoundManager : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
+        float masterVolume = SettingsManager.Instance.MasterVolume;
+        AudioListener.volume = masterVolume / 10.0f;
     }
 
     public enum Sound
@@ -32,6 +34,7 @@ public class SoundManager : MonoBehaviour
         FIREBALL_FLY = 304,
 
         BACKGROUND_OCEAN = 401,
+        BUTTON_CLICK = 402,
     }
 
     public enum SoundType
@@ -46,18 +49,17 @@ public class SoundManager : MonoBehaviour
         AudioSource audioSource = soundObj.AddComponent<AudioSource>();
         SoundAudioClip soundAudioClip = GetSoundAudioClip(sound);
         // get volume
-        float masterVolume = SettingsManager.Instance.MasterVolume;
         float musicVolume = SettingsManager.Instance.MusicVolume;
         float sfxVolume = SettingsManager.Instance.SFXVolume;
         float volume;
         if (soundAudioClip.soundType == SoundType.MUSIC)
         {
-            volume = masterVolume * musicVolume / 100.0f;
+            volume = musicVolume / 10.0f;
             audioSource.loop = true;
         }
         else
         {
-            volume = masterVolume * sfxVolume / 100.0f;
+            volume = sfxVolume / 10.0f;
         }
         audioSource.clip = soundAudioClip.audioClip;
         audioSource.loop = loop;

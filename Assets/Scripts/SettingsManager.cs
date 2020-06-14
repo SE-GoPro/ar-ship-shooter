@@ -40,6 +40,7 @@ public class SettingsManager : MonoBehaviour
     public void SetWaterQuality(float value)
     {
         Logger.Log("Settings: SetWaterQuality - " + value);
+        WaterQuality = value;
         PlayerPrefs.SetFloat(WATER_QUALITY, value);
     }
 
@@ -47,6 +48,7 @@ public class SettingsManager : MonoBehaviour
     public void SetDefaultARView(bool value)
     {
         Logger.Log("Settings: SetDefaultARView - " + value.ToString());
+        DefaultARView = value;
         PlayerPrefs.SetInt(DEFAULT_AR_VIEW, value ? 1 : 0);
     }
 
@@ -54,6 +56,8 @@ public class SettingsManager : MonoBehaviour
     public void SetMasterVolume(float value)
     {
         Logger.Log("Settings: SetMasterVolume - " + value);
+        MasterVolume = value;
+        AudioListener.volume = value / 10.0f;
         PlayerPrefs.SetFloat(MASTER_VOLUME, value);
     }
 
@@ -61,6 +65,7 @@ public class SettingsManager : MonoBehaviour
     public void SetMusicVolume(float value)
     {
         Logger.Log("Settings: SetMusicVolume - " + value);
+        MusicVolume = value;
         PlayerPrefs.SetFloat(MUSIC_VOLUME, value);
     }
 
@@ -68,6 +73,7 @@ public class SettingsManager : MonoBehaviour
     public void SetSFXVolume(float value)
     {
         Logger.Log("Settings: SetSFXVolume - " + value);
+        SFXVolume = value;
         PlayerPrefs.SetFloat(SFX_VOLUME, value);
     }
 

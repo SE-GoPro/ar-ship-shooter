@@ -60,14 +60,14 @@ public class GameManager : MonoBehaviour
                             Logger.Log("GameManager: retrieve OpId from CurrentState");
                             Connection.Instance.OpId = isHost ? CurrentState.GuestPlayerId : CurrentState.HostPlayerId;
                         }
-                        SceneManager.LoadScene(Constants.SCENE_INDEX_PREGAME);
+                        SceneManager.LoadSceneAsync(Constants.SCENE_INDEX_PREGAME);
                         break;
                     }
 
                 case State.BEGIN_BATTLE:
                     {
                         Logger.Log("GameManager: BEGIN_BATTLE");
-                        SceneManager.LoadScene(Constants.SCENE_INDEX_INGAME);
+                        SceneManager.LoadSceneAsync(Constants.SCENE_INDEX_INGAME);
                         break;
                     }
 

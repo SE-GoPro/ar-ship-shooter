@@ -157,7 +157,7 @@ public class InGameController : MonoBehaviour
         if (IsARSupported)
         {
             Logger.Log("InGameController: NextStep - Loading AR scene");
-            SceneManager.LoadScene(Constants.SCENE_INDEX_INGAME_AR);
+            SceneManager.LoadSceneAsync(Constants.SCENE_INDEX_INGAME_AR);
         } else
         {
             Logger.Log("InGameController: NextStep - AR not supported, continue loading normal scene");
