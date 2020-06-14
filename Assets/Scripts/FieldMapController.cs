@@ -326,10 +326,12 @@ public class FieldMapController : MonoBehaviour
         if (ShipIdAtCell == Constants.EMPTY_CELL_ID)
         {
             // If empty cell
+            SoundManager.Instance.PlaySound(SoundManager.Sound.BOOM_MISS_WATER);
             StartCoroutine(DelayDecreaseHealth(0, 1));
         } else
         {
             // If cell has ship
+            SoundManager.Instance.PlaySound(SoundManager.Sound.BOOM_HIT_WATER);
             LastHitCellCon = cellCon;
             IsLastHitDestroyShip = false;
             cellCon.HasShip = true;

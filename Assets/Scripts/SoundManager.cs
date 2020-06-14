@@ -15,7 +15,6 @@ public class SoundManager : MonoBehaviour
 
     private void Awake()
     {
-        //instance = (new GameObject("SoundManagerObject")).AddComponent<SoundManager>();
         DontDestroyOnLoad(this.gameObject);
     }
 
@@ -30,6 +29,7 @@ public class SoundManager : MonoBehaviour
         BACKGROUND_INGAME = 301,
         BOOM_HIT_WATER = 302,
         BOOM_MISS_WATER = 303,
+        FIREBALL_FLY = 304,
 
         BACKGROUND_OCEAN = 401,
     }

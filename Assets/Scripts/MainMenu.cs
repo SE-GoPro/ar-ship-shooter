@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_MENU, true);
         DisplayConnectButton(false);
     }
 

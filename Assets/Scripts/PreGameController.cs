@@ -59,6 +59,7 @@ public class PreGameController : MonoBehaviour
             WaterHigh.GetComponent<Water>().Enabled = true;
         }
 
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_PREGAME, true);
         SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_OCEAN, true);
 
         // handle play with BOT

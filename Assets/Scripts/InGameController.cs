@@ -207,6 +207,10 @@ public class InGameController : MonoBehaviour
         InitSelf();
         InitOp();
 
+        // Play sound
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_INGAME, true);
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_OCEAN, true);
+
         // Delay start turn
         StartCoroutine(DelayStartTurnForSeconds(3));
     }
@@ -355,6 +359,7 @@ public class InGameController : MonoBehaviour
         rigidbody.mass = rigidbody.mass * PhysicsMultiplier;
         transform.transform.localPosition = new Vector3(0, 200, 0) + cellPosition;
         rigidbody.velocity = new Vector3(0, -100, 0) * PhysicsMultiplier;
+        SoundManager.Instance.PlaySound(SoundManager.Sound.FIREBALL_FLY);
     }
 
     public void UpdateHPAndCheckWin(int MyHp, int OpHp)
