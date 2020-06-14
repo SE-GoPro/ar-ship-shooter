@@ -25,6 +25,7 @@ public class Constants
     public const int SCENE_INDEX_MENU = 0;
     public const int SCENE_INDEX_PREGAME = 1;
     public const int SCENE_INDEX_INGAME = 2;
+    public const int SCENE_INDEX_INGAME_AR = 3;
 
     public const int ARRANGE_SHIP_TIME = 60;
 }
