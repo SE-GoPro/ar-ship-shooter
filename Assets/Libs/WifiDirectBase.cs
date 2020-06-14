@@ -223,3 +223,86 @@ public class WifiDirectBase : MonoBehaviour {
 	}
 }
 #endif
+
+#if UNITY_IOS
+public class WifiDirectBase : MonoBehaviour
+{
+	public void Initialize(string gameObjectName)
+	{
+	}
+
+	public void Terminate()
+	{
+	}
+
+	public string GetDeviceAddress()
+	{
+		return null;
+	}
+
+	public void BroadcastService(string service, Dictionary<string, string> record)
+	{
+	}
+
+	public void DiscoverServices()
+	{
+	}
+
+	public void StopDiscovering()
+	{
+	}
+
+	public void ConnectToService(string addr)
+	{
+	}
+
+	public void PublishMessage(string msg)
+	{
+	}
+
+	public bool IsReady()
+	{
+		return false;
+	}
+
+	public virtual void OnServiceConnected()
+	{
+		Debug.Log("service is legit");
+	}
+
+	public virtual void OnServiceDisconnected()
+	{
+		Debug.Log("service failed");
+	}
+
+	public virtual void OnServiceFound(string addr)
+	{
+
+	}
+
+	public void OnReceiveStringifyRecord(string stringifyRecord)
+	{
+	}
+
+	public virtual void OnTxtRecord(string addr, Dictionary<string, string> record)
+	{
+	}
+
+	public virtual void OnConnect()
+	{
+	}
+
+	public virtual void OnReceiveMessage(string message)
+	{
+	}
+
+	public void Send(Message message)
+	{
+	}
+
+	public Message OnReceive(string strDict)
+	{
+		return new Message();
+	}
+}
+#endif
