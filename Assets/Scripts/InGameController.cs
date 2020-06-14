@@ -230,4 +230,65 @@ public class InGameController : MonoBehaviour
     {
         OverlayManager.GetComponent<OverlayManager>().Open(isWin ? "YOU WON" : "YOU LOSE");
     }
+
+    public void BOTAttack()
+    {
+        FieldMapController myFieldMapCon = MyFieldMap.GetComponent<FieldMapController>();
+        (int predRow, int predCol) = PredictCell(myFieldMapCon, myFieldMapCon.LastHitCellCon, myFieldMapCon.IsLastHitDestroyShip);
+        TargetModel target = new TargetModel(predRow, predCol, Connection.Instance.MyId);
+        BOTGameManager.Instance.Attack(target);
+    }
+
+    public (int, int) PredictCell(FieldMapController fieldMapCon, CellController lastHitCell, bool isLastHitDestroyShip)
+    {
+        // handle pick relative cell of the last hit
+        if (!isLastHitDestroyShip && lastHitCell != null)
+        {
+            (int, int)[] possibleRelatives = {
+                (lastHitCell.row - 1, lastHitCell.col),
+                (lastHitCell.row + 1, lastHitCell.col),
+                (lastHitCell.row, lastHitCell.col - 1),
+                (lastHitCell.row, lastHitCell.col + 1),
+            };
+            (int, int) predCell = (-1, -1);
+            foreach ((int row, int col) in possibleRelatives)
+            {
+                if (!fieldMapCon.CheckValidCellCord(row, col))
+                {
+                    continue;
+                }
+                CellController possibleCell = fieldMapCon.mapArr[row, col].GetComponent<CellController>();
+                if (possibleCell.Fired)
+                {
+                    continue;
+                }
+                predCell = (row, col);
+            }
+            // Should never go here, because the last hit not destroy ship
+            if (predCell.Item1 == -1)
+            {
+                Logger.LogError("BOT error: Should never go here, because the last hit not destroy ship");
+                return PredictCell(fieldMapCon, lastHitCell, true);
+            }
+            return predCell;
+        }
+        // handle pick random cell if last hit destroyed ship, or not hit anything yet
+        else
+        {
+            System.Random rand = new System.Random();
+
+            int randomRow = 0;
+            int randomCol = 0;
+            bool isValid = false;
+            while (!isValid)
+            {
+                randomRow = rand.Next(Constants.MAP_SIZE);
+                randomCol = rand.Next(Constants.MAP_SIZE);
+                CellController possibleCell = fieldMapCon.mapArr[randomRow, randomCol].GetComponent<CellController>();
+                // If the cell is not fired before -> valid
+                isValid = !possibleCell.Fired;
+            }
+            return (randomRow, randomCol);
+        }
+    }
 }

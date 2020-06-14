@@ -138,9 +138,16 @@ public class GameManager : MonoBehaviour
 
     private void NotifyChangeState(GameState newState)
     {
-        string JsonifiedState = JsonUtility.ToJson(newState);
-        Connection.Instance.Send(new Message(MessageTypes.STATE_CHANGE, JsonifiedState));
-        Logger.Log("GameManager: NotifyChangeState - " + JsonifiedState);
+        if (Connection.Instance.isOnline)
+        {
+            string JsonifiedState = JsonUtility.ToJson(newState);
+            Connection.Instance.Send(new Message(MessageTypes.STATE_CHANGE, JsonifiedState));
+            Logger.Log("GameManager: NotifyChangeState - " + JsonifiedState);
+        }
+        else
+        {
+            BOTGameManager.Instance.OnRequestChangeState(newState);
+        }
     }
 
     public void ChangeState(GameState newState)

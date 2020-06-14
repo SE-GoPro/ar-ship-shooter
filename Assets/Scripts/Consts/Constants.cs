@@ -20,7 +20,7 @@ public class Constants
     public const int MAX_HP = 20;
     public const int EMPTY_CELL_ID = -1;
 
-    public const string WFDR_NAMESPACE = "arship";
+    public const string WFDR_NAMESPACE = "arship01";
 
     public const int SCENE_INDEX_MENU = 0;
     public const int SCENE_INDEX_PREGAME = 1;

@@ -11,6 +11,20 @@
 
 public class SettingsManager : MonoBehaviour
 {
+    private static SettingsManager instance;
+
+    public static SettingsManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = GameObject.FindGameObjectWithTag(Tags.SETTINGS_MANAGER).GetComponent<SettingsManager>();
+            }
+            return instance;
+        }
+    }
+
     private const string WATER_QUALITY = "WATER_QUALITY";
     private const string DEFAULT_AR_VIEW = "DEFAULT_AR_VIEW";
     private const string MASTER_VOLUME = "MASTER_VOLUME";

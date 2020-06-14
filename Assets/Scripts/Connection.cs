@@ -9,12 +9,11 @@ public class Connection : WifiDirectBase
 {
     static Connection instance = null;
 
-    public GameObject MainMenu = null;
-    AndroidJavaObject mWiFiManager;
     public string MyId = null;
     public string OpId = null;
     public bool Connected = false;
     public bool isHost = false;
+    public bool isOnline = true;
 
     public List<string> deviceList;
 
@@ -38,6 +37,17 @@ public class Connection : WifiDirectBase
         Logger.Log("Connection: Initializing");
     }
 
+    public void OfflineMode()
+    {
+        Logger.Log("Connection: Starting Offline mode");
+        Reset();
+        isOnline = false;
+        isHost = true;
+        GameManager.Instance.isHost = true;
+        OpId = "BOT_ID";
+        GameManager.Instance.StartGame();
+    }
+
     public void Reset()
     {
         Logger.Log("Connection: Reset");
@@ -45,6 +55,7 @@ public class Connection : WifiDirectBase
         deviceList = new List<string>();
         Connected = false;
         isHost = false;
+        isOnline = true;
     }
 
     public bool setWifiEnabled(bool enabled)

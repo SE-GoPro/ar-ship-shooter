@@ -57,6 +57,18 @@ public class PreGameController : MonoBehaviour
             WaterHigh.GetComponent<Water>().Enabled = true;
         }
 
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_OCEAN, true);
+
+        // handle play with BOT
+        if (!Connection.Instance.isOnline)
+        {
+            FieldMapController fieldMapCon = FieldMap.GetComponent<FieldMapController>();
+            fieldMapCon.AutoArrangeShips();
+            string serializedShips = fieldMapCon.GetSerializedShips();
+            fieldMapCon.ResetAllShips();
+            BOTGameManager.Instance.Ready(serializedShips);
+        }
+
         InvokeRepeating("UpdateRemainingTime", 1.0f, 1.0f);
     }
 

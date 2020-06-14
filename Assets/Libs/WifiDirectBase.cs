@@ -60,11 +60,12 @@ public class WifiDirectBase : MonoBehaviour {
 	public void BroadcastService(string service, Dictionary<string, string> record) {
 		using(AndroidJavaObject hashMap = new AndroidJavaObject("java.util.HashMap"))
 		{
-			foreach(KeyValuePair<string, string> kvp in record)
-			{
-				hashMap.Call<string> ("put", kvp.Key, kvp.Value);
-			}
-			_wifiDirect.CallStatic ("broadcastService", service, hashMap);
+            //foreach (KeyValuePair<string, string> kvp in record)
+            //{
+            //    hashMap.Call<string>("put", kvp.Key, kvp.Value);
+            //}
+            _wifiDirect.CallStatic("broadcastService", service, hashMap);
+            //_wifiDirect.CallStatic("broadcastService", service, null);
 		}
 	}
 

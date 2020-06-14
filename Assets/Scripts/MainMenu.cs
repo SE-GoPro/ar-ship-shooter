@@ -29,6 +29,11 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    public void PlayWithBOT()
+    {
+        Connection.Instance.OfflineMode();
+    }
+
     public void StopPlaying()
     {
         Connection.Instance.StopDiscovering();

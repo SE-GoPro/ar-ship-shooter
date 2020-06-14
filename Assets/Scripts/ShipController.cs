@@ -88,6 +88,7 @@ class ShipController : MonoBehaviour
         OnBeginDrag.Invoke();
         Dragging = true;
         FieldMap.GetComponent<FieldMapController>().RemoveShipFromArray(gameObject);
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BOAT_OUT_WATER);
     }
 
     void EndDrag()
@@ -113,12 +114,14 @@ class ShipController : MonoBehaviour
             RotateButton.gameObject.SetActive(false);
         }
         fieldMapColtroller.ResetCellStatus();
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BOAT_TO_WATER);
     }
 
     public void ResetShip()
     {
         FieldMapController fieldMapColtroller = FieldMap.GetComponent<FieldMapController>();
         transform.position = InitialPosition;
+        SetDirection(4);
         fieldMapColtroller.RemoveShipFromArray(gameObject);
         RotateButton.gameObject.SetActive(true);
     }
