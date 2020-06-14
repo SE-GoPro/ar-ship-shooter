@@ -39,12 +39,14 @@ public class FieldMapController : MonoBehaviour
             {
                 GameObject cell = Instantiate(
                     CellPrefab,
-                    new Vector3(
-                        col * Constants.CELL_SIZE + LeftOffset,
-                        Constants.CELL_ELEVATION,
-                        row * Constants.CELL_SIZE + BottomOffset
-                    ),
-                    CellPrefab.transform.rotation
+                    Vector3.zero,
+                    CellPrefab.transform.rotation,
+                    gameObject.transform
+                );
+                cell.GetComponent<Transform>().transform.localPosition = new Vector3(
+                    col * Constants.CELL_SIZE + LeftOffset,
+                    Constants.CELL_ELEVATION,
+                    row * Constants.CELL_SIZE + BottomOffset
                 );
                 cell.GetComponent<CellController>().row = row;
                 cell.GetComponent<CellController>().col = col;

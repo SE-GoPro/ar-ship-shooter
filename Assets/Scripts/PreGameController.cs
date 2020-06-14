@@ -23,8 +23,10 @@ public class PreGameController : MonoBehaviour
         FieldMap = Instantiate(
             FieldMapPrefab,
             transform.position,
-            Quaternion.identity
+            Quaternion.identity,
+            gameObject.transform
         );
+        FieldMap.GetComponent<FieldMapController>().SceneController = gameObject;
         FieldMap.GetComponent<FieldMapController>().Init();
         InitShip(0, 4, new Vector3(18, 9, 34.5f));
         InitShip(1, 3, new Vector3(38, 9, 34.5f));
@@ -83,7 +85,8 @@ public class PreGameController : MonoBehaviour
         GameObject ship = Instantiate(
             prefab,
             initialPos,
-            prefab.transform.rotation
+            prefab.transform.rotation,
+            gameObject.transform
         );
         ship.GetComponent<ShipController>().FieldMap = FieldMap;
         ship.GetComponent<ShipController>().id = id;

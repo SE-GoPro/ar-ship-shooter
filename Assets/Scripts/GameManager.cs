@@ -67,8 +67,6 @@ public class GameManager : MonoBehaviour
                 case State.BEGIN_BATTLE:
                     {
                         Logger.Log("GameManager: BEGIN_BATTLE");
-                        // TODO: ar
-                        //SceneManager.LoadScene(Constants.SCENE_INDEX_INGAME_AR);
                         SceneManager.LoadScene(Constants.SCENE_INDEX_INGAME);
                         break;
                     }

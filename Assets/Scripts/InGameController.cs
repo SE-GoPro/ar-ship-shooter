@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.XR.ARFoundation;
 
 public class InGameController : MonoBehaviour
 {
@@ -22,11 +24,162 @@ public class InGameController : MonoBehaviour
     public GameObject WaterLow = null;
     public GameObject SettingsManager = null;
 
+    public GameObject ARSessionPrefab;
+    private GameObject ARSessionObj;
+    private float PhysicsMultiplier;
+    private float BottomOffset = -350.0f;
+
     private int RemainingTime = Constants.ARRANGE_SHIP_TIME;
 
     // Start is called before the first frame update
     void Start()
     {
+        Logger.Log("InGameController: Start - " + SceneManager.GetActiveScene().name);
+        // Check if AR
+        if (SceneManager.GetActiveScene().buildIndex == Constants.SCENE_INDEX_INGAME)
+        {
+            if (SettingsManager.GetComponent<SettingsManager>().DefaultARView == true)
+            {
+                StartCoroutine(CheckAR());
+            }
+            else
+            {
+                // Init normal scene
+                Init(false);
+            }
+        } else
+        {
+            // Init AR scene
+            Init(true);
+        }
+    }
+
+    private IEnumerator CheckAR()
+    {
+        if (!ARSessionObj)
+        {
+            ARSessionObj = Instantiate(ARSessionPrefab);
+            yield return new WaitForSecondsRealtime(1);
+        }
+        if (!Application.isEditor)
+        {
+            Debug.Log("ARSession.state: " + ARSession.state);
+            switch (ARSession.state)
+            {
+                case ARSessionState.CheckingAvailability:
+                    Debug.Log("Still Checking Availability...");
+                    ARSession.stateChanged += ARSessionStateChanged;
+                    break;
+                case ARSessionState.NeedsInstall:
+                    Debug.Log("Supported, not installed, requesting installation");
+                    //TODO: Request ARCore services apk installation and install only if user allows
+                    StartCoroutine(InstallARCoreApp());
+                    break;
+                case ARSessionState.Installing:
+                    Debug.Log("Supported, apk installing");
+                    StartCoroutine(InstallARCoreApp());
+                    break;
+                case ARSessionState.Ready:
+                    Debug.Log("Supported and installed");
+                    NextStep(true);
+                    break;
+                case ARSessionState.SessionInitializing:
+                    Debug.Log("Supported, apk installed. SessionInitializing...");
+                    NextStep(true);
+                    break;
+                case ARSessionState.SessionTracking:
+                    Debug.Log("Supported, apk installed. SessionTracking...");
+                    NextStep(true);
+                    break;
+                default:
+                    Debug.Log("Unsupported, Device Not Capable");
+                    NextStep(false);
+                    break;
+            }
+        }
+        else
+        {
+            Debug.Log("Unity editor: AR not supported, Device Not Capable");
+            NextStep(false);
+        }
+    }
+
+    private void ARSessionStateChanged(ARSessionStateChangedEventArgs obj)
+    {
+        Debug.Log("Inside ARSessionStateChanged delegate...");
+        switch (ARSession.state)
+        {
+            case ARSessionState.CheckingAvailability:
+                Debug.Log("Still Checking Availability...");
+                break;
+            case ARSessionState.NeedsInstall:
+                Debug.Log("Supported, not installed, requesting installation");
+                //TODO: Request ARCore services apk installation and install only if user allows
+                StartCoroutine(InstallARCoreApp());
+                break;
+            case ARSessionState.Installing:
+                Debug.Log("Supported, apk installing");
+                StartCoroutine(InstallARCoreApp());
+                break;
+            case ARSessionState.Ready:
+                Debug.Log("Supported and installed");
+                NextStep(true);
+                break;
+            case ARSessionState.SessionInitializing:
+                Debug.Log("Supported, apk installed. SessionInitializing...");
+                NextStep(true);
+                break;
+            case ARSessionState.SessionTracking:
+                Debug.Log("Supported, apk installed. SessionTracking...");
+                NextStep(true);
+                break;
+            default:
+                Debug.Log("Unsupported, Device Not Capable");
+                NextStep(false);
+                break;
+        }
+    }
+
+    private IEnumerator InstallARCoreApp()
+    {
+        yield return ARSession.Install();
+        NextStep(true);
+    }
+
+    private void NextStep(bool IsARSupported)
+    {
+        Logger.Log("InGameController: NextStep - " + IsARSupported);
+        ARSession.stateChanged -= ARSessionStateChanged;
+        if (ARSessionObj)
+        {
+            Destroy(ARSessionObj);
+        }
+        if (IsARSupported)
+        {
+            Logger.Log("InGameController: NextStep - Loading AR scene");
+            SceneManager.LoadScene(Constants.SCENE_INDEX_INGAME_AR);
+        } else
+        {
+            Logger.Log("InGameController: NextStep - AR not supported, continue loading normal scene");
+            Init(false);
+        }
+    }
+
+    private void Init(bool isAR)
+    {
+        Logger.Log("InGameController: Init - " + (isAR ? "with AR" : "without AR"));
+        if (isAR)
+        {
+            PhysicsMultiplier = 1f;
+            BottomOffset = 0.0f;
+        }
+        else
+        {
+            PhysicsMultiplier = 1f;
+            BottomOffset = -350.0f;
+        }
+        Physics.gravity = Physics.gravity * PhysicsMultiplier;
+
         // Set up water quality
         int waterQuality = (int)SettingsManager.GetComponent<SettingsManager>().WaterQuality;
         if (waterQuality >= 2)
@@ -64,13 +217,14 @@ public class InGameController : MonoBehaviour
         MyFieldMap = Instantiate(
             FieldMapPrefab,
             transform.position,
-            Quaternion.identity
+            Quaternion.identity,
+            gameObject.transform
         );
         FieldMapController myFieldMapController = MyFieldMap.GetComponent<FieldMapController>();
         myFieldMapController.SceneController = gameObject;
         myFieldMapController.IsMyField = true;
         myFieldMapController.LeftOffset = -125.5f;
-        myFieldMapController.BottomOffset = -350.0f;
+        myFieldMapController.BottomOffset = BottomOffset;
         myFieldMapController.Init();
 
         // Init my ships
@@ -86,9 +240,11 @@ public class InGameController : MonoBehaviour
 
             GameObject ship = Instantiate(
                 prefab,
-                new Vector3(0, 9, 0),
-                prefab.transform.rotation
+                Vector3.zero,
+                prefab.transform.rotation,
+                myFieldMapController.gameObject.transform
             );
+            ship.GetComponent<Transform>().transform.localPosition = new Vector3(0, 9, 0);
             ship.GetComponent<ShipController>().FieldMap = MyFieldMap;
             ship.GetComponent<ShipController>().id = shipModel.id;
             ship.GetComponent<ShipController>().UpdateColor(GameManager.Instance.isHost);
@@ -105,13 +261,14 @@ public class InGameController : MonoBehaviour
         OpFieldMap = Instantiate(
             FieldMapPrefab,
             transform.position,
-            Quaternion.identity
+            Quaternion.identity,
+            gameObject.transform
         );
         FieldMapController opFieldMapController = OpFieldMap.GetComponent<FieldMapController>();
         opFieldMapController.SceneController = gameObject;
         opFieldMapController.IsMyField = false;
         opFieldMapController.LeftOffset = 34.5f;
-        opFieldMapController.BottomOffset = -350.0f;
+        opFieldMapController.BottomOffset = BottomOffset;
         opFieldMapController.Init();
 
         // Init op ships
@@ -127,9 +284,11 @@ public class InGameController : MonoBehaviour
 
             GameObject ship = Instantiate(
                 prefab,
-                new Vector3(0, 9, 0),
-                prefab.transform.rotation
+                Vector3.zero,
+                prefab.transform.rotation,
+                opFieldMapController.gameObject.transform
             );
+            ship.GetComponent<Transform>().transform.localPosition = new Vector3(0, 9, 0);
             ship.GetComponent<ShipController>().FieldMap = OpFieldMap;
             ship.GetComponent<ShipController>().id = shipModel.id;
             ship.GetComponent<ShipController>().UpdateColor(!GameManager.Instance.isHost);
@@ -184,13 +343,18 @@ public class InGameController : MonoBehaviour
             fieldMap = OpFieldMap.GetComponent<FieldMapController>();
         }
 
-        Vector3 cellPosition = fieldMap.GetCellByPos(target.Row, target.Col).transform.position;
+        Vector3 cellPosition = fieldMap.GetCellByPos(target.Row, target.Col).transform.localPosition;
         GameObject fireBall = Instantiate(
             FireBallPrefab,
-            new Vector3(0, 200, 0) + cellPosition,
-            FireBallPrefab.transform.rotation
+            new Vector3(0, 200, 0),
+            FireBallPrefab.transform.rotation,
+            fieldMap.gameObject.transform
         );
-        fireBall.GetComponent<Rigidbody>().velocity = new Vector3(0, -100, 0);
+        Rigidbody rigidbody = fireBall.GetComponent<Rigidbody>();
+        Transform transform = fireBall.GetComponent<Transform>();
+        rigidbody.mass = rigidbody.mass * PhysicsMultiplier;
+        transform.transform.localPosition = new Vector3(0, 200, 0) + cellPosition;
+        rigidbody.velocity = new Vector3(0, -100, 0) * PhysicsMultiplier;
     }
 
     public void UpdateHPAndCheckWin(int MyHp, int OpHp)

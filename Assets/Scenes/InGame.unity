@@ -1451,17 +1451,17 @@ PrefabInstance:
     - target: {fileID: 2778812691123161763, guid: ad373f1b3b2e7482ba29a24ff4261605,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 96.49042
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2778812691123161763, guid: ad373f1b3b2e7482ba29a24ff4261605,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -128.96039
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2778812691123161763, guid: ad373f1b3b2e7482ba29a24ff4261605,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -63.657227
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2778812691123161763, guid: ad373f1b3b2e7482ba29a24ff4261605,
         type: 3}
@@ -2285,6 +2285,9 @@ MonoBehaviour:
   WaterHigh: {fileID: 210622209}
   WaterLow: {fileID: 592820157}
   SettingsManager: {fileID: 1193032009}
+  ARSessionPrefab: {fileID: 5926668566189414606, guid: 2704a3c9a57e345298a0a227f904ca16,
+    type: 3}
+  PhysicsMultiplier: 0
 --- !u!4 &2060567641
 Transform:
   m_ObjectHideFlags: 0
@@ -2293,7 +2296,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2060567639}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -276.5595, y: 178.54456, z: 20.544434}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -2326,17 +2329,17 @@ PrefabInstance:
     - target: {fileID: 3656307881250850519, guid: 4a34c3b3bb85a483ea84cd3fef8ca0df,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 132.59033
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3656307881250850519, guid: 4a34c3b3bb85a483ea84cd3fef8ca0df,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -190.9516
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3656307881250850519, guid: 4a34c3b3bb85a483ea84cd3fef8ca0df,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 59.887512
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3656307881250850519, guid: 4a34c3b3bb85a483ea84cd3fef8ca0df,
         type: 3}
