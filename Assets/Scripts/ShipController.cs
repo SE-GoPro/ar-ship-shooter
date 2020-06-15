@@ -174,6 +174,6 @@ class ShipController : MonoBehaviour
         Color color;
         string colorCode = isHost ? Constants.SHIP_COLOR_BLUE : Constants.SHIP_COLOR_RED;
         ColorUtility.TryParseHtmlString(colorCode, out color);
-        GetComponent<Renderer>().material.color = color;
+        GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
     }
 }
