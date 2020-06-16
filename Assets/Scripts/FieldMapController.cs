@@ -20,8 +20,7 @@ public class FieldMapController : MonoBehaviour
     public bool IsMyField = false;
     public bool Selectable = false;
 
-    public CellController LastHitCellCon = null;
-    public bool IsLastHitDestroyShip = false;
+    public List<CellController> HitCellsCon = new List<CellController>();
 
     public void Awake()
     {
@@ -316,14 +315,29 @@ public class FieldMapController : MonoBehaviour
         }
     }
 
+    public GameObject GetShipAtCell(GameObject cell)
+    {
+        CellController cellCon = cell.GetComponent<CellController>();
+        int[,] numMapArr = GetNumericMap();
+        int ShipIdAtCell = numMapArr[cellCon.row, cellCon.col];
+        if (ShipIdAtCell == Constants.EMPTY_CELL_ID)
+        {
+            return null;
+        }
+        else
+        {
+            GameObject ship = GetComponent<FieldMapController>().shipArr[ShipIdAtCell];
+            return ship;
+        }
+    }
+
     public void CheckDestroyCell(GameObject cell)
     {
         Logger.Log("FieldMap: CheckDestroyCell");
         CellController cellCon = cell.GetComponent<CellController>();
         cellCon.Fired = true;
-        int[,] numMapArr = GetNumericMap();
-        int ShipIdAtCell = numMapArr[cellCon.row, cellCon.col];
-        if (ShipIdAtCell == Constants.EMPTY_CELL_ID)
+        GameObject ship = GetShipAtCell(cell);
+        if (ship == null)
         {
             // If empty cell
             SoundManager.Instance.PlaySound(SoundManager.Sound.BOOM_MISS_WATER);
@@ -332,16 +346,17 @@ public class FieldMapController : MonoBehaviour
         {
             // If cell has ship
             SoundManager.Instance.PlaySound(SoundManager.Sound.BOOM_HIT_WATER);
-            LastHitCellCon = cellCon;
-            IsLastHitDestroyShip = false;
+            if (!HitCellsCon.Contains(cellCon))
+            {
+                HitCellsCon.Add(cellCon);
+            }
             cellCon.HasShip = true;
-            GameObject ship = GetComponent<FieldMapController>().shipArr[ShipIdAtCell];
             ship.GetComponent<ShipController>().Attacked++;
             // If the whole ship destroyed
             if (ship.GetComponent<ShipController>().Attacked == ship.GetComponent<ShipController>().length)
             {
-                IsLastHitDestroyShip = true;
-                ship.SetActive(true);
+                HitCellsCon.Clear();
+                ship.GetComponent<ShipController>().Reveal();
                 // Show explosion
                 Vector2[] cellsPos = GetCellsInShip(ship.GetComponent<ShipController>());
                 foreach (Vector2 cellPos in cellsPos)

@@ -15,6 +15,7 @@ class ShipController : MonoBehaviour
     public GameObject FieldMap;
     public GameObject RotateButton;
     public int Attacked = 0;
+    public bool Revealed = false;
 
     [SerializeField]
     public UnityEvent OnBeginDrag;
@@ -175,5 +176,11 @@ class ShipController : MonoBehaviour
         string colorCode = isHost ? Constants.SHIP_COLOR_BLUE : Constants.SHIP_COLOR_RED;
         ColorUtility.TryParseHtmlString(colorCode, out color);
         GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
+    }
+
+    public void Reveal()
+    {
+        gameObject.SetActive(true);
+        Revealed = true;
     }
 }

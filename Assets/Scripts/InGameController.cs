@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.XR.ARFoundation;
+
 
 public class InGameController : MonoBehaviour
 {
@@ -403,43 +405,110 @@ public class InGameController : MonoBehaviour
     public void BOTAttack()
     {
         FieldMapController myFieldMapCon = MyFieldMap.GetComponent<FieldMapController>();
-        (int predRow, int predCol) = PredictCell(myFieldMapCon, myFieldMapCon.LastHitCellCon, myFieldMapCon.IsLastHitDestroyShip);
+        (int predRow, int predCol) = PredictCell(myFieldMapCon);
         TargetModel target = new TargetModel(predRow, predCol, Connection.Instance.MyId);
         BOTGameManager.Instance.Attack(target);
     }
 
-    public (int, int) PredictCell(FieldMapController fieldMapCon, CellController lastHitCell, bool isLastHitDestroyShip)
+    // Check if cell is not be fired yet, and relate cells not contain revealed ship
+    private bool CheckIfShouldFireCell(FieldMapController fieldMapCon, CellController cellCon)
+    {
+        // Check if cell is not be fired yet
+        if (cellCon.Fired)
+        {
+            return false;
+        }
+        // Check if relate cells not contain revealed ship
+        (int, int)[] possibleOffsets =
+        {
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1),
+        };
+        foreach ((int offsetRow, int offsetCol) in possibleOffsets)
+        {
+            int row = offsetRow + cellCon.row;
+            int col = offsetCol + cellCon.col;
+            if (!fieldMapCon.CheckValidCellCord(row, col))
+            {
+                continue;
+            }
+            GameObject relateCell = fieldMapCon.mapArr[row, col];
+            GameObject shipAtCell = fieldMapCon.GetShipAtCell(relateCell);
+            if (shipAtCell != null && shipAtCell.GetComponent<ShipController>().Revealed)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public (int, int) PredictCell(FieldMapController fieldMapCon)
     {
         // handle pick relative cell of the last hit
-        if (!isLastHitDestroyShip && lastHitCell != null)
+        List<CellController> hitCellsCon = fieldMapCon.HitCellsCon;
+        if (hitCellsCon.Count > 0)
         {
-            (int, int)[] possibleRelatives = {
-                (lastHitCell.row - 1, lastHitCell.col),
-                (lastHitCell.row + 1, lastHitCell.col),
-                (lastHitCell.row, lastHitCell.col - 1),
-                (lastHitCell.row, lastHitCell.col + 1),
-            };
-            (int, int) predCell = (-1, -1);
-            foreach ((int row, int col) in possibleRelatives)
+            List<(int, int)> possibleOffsets = new List<(int, int)>();
+            possibleOffsets.Add((-1, 0));
+            possibleOffsets.Add((1, 0));
+            possibleOffsets.Add((0, -1));
+            possibleOffsets.Add((0, 1));
+
+            // Remove possible offsets in case there's >=2 cell that in the same row/col
+            if (hitCellsCon.Count >= 2)
             {
-                if (!fieldMapCon.CheckValidCellCord(row, col))
+                if (hitCellsCon[0].row == hitCellsCon[1].row)
                 {
-                    continue;
+                    possibleOffsets.Remove((-1, 0));
+                    possibleOffsets.Remove((1, 0));
                 }
-                CellController possibleCell = fieldMapCon.mapArr[row, col].GetComponent<CellController>();
-                if (possibleCell.Fired)
+                else if (hitCellsCon[0].col == hitCellsCon[1].col)
                 {
-                    continue;
+                    possibleOffsets.Remove((0, -1));
+                    possibleOffsets.Remove((0, 1));
                 }
-                predCell = (row, col);
             }
+            possibleOffsets.Shuffle();
+
+            CellController predCellCon = null;
+            // Loop through all possible cells
+            foreach (CellController hitCellCon in hitCellsCon)
+            {
+                if (predCellCon != null)
+                {
+                    break;
+                }
+                foreach ((int offsetRow, int offsetCol) in possibleOffsets)
+                {
+                    int row = offsetRow + hitCellCon.row;
+                    int col = offsetCol + hitCellCon.col;
+                    if (!fieldMapCon.CheckValidCellCord(row, col))
+                    {
+                        continue;
+                    }
+                    CellController possibleCellCon = fieldMapCon.mapArr[row, col].GetComponent<CellController>();
+                    if (CheckIfShouldFireCell(fieldMapCon, possibleCellCon))
+                    {
+                        predCellCon = possibleCellCon;
+                        break;
+                    }
+                }
+            }
+
             // Should never go here, because the last hit not destroy ship
-            if (predCell.Item1 == -1)
+            if (predCellCon == null)
             {
                 Logger.LogError("BOT error: Should never go here, because the last hit not destroy ship");
-                return PredictCell(fieldMapCon, lastHitCell, true);
+                fieldMapCon.HitCellsCon.Clear();
+                return PredictCell(fieldMapCon);
             }
-            return predCell;
+            return (predCellCon.row, predCellCon.col);
         }
         // handle pick random cell if last hit destroyed ship, or not hit anything yet
         else
@@ -455,9 +524,27 @@ public class InGameController : MonoBehaviour
                 randomCol = rand.Next(Constants.MAP_SIZE);
                 CellController possibleCell = fieldMapCon.mapArr[randomRow, randomCol].GetComponent<CellController>();
                 // If the cell is not fired before -> valid
-                isValid = !possibleCell.Fired;
+                isValid = CheckIfShouldFireCell(fieldMapCon, possibleCell);
             }
             return (randomRow, randomCol);
+        }
+    }
+}
+
+static class StringExtensions
+{
+    private static System.Random rng = new System.Random();
+
+    public static void Shuffle<T>(this IList<T> list)
+    {
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
         }
     }
 }

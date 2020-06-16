@@ -148,9 +148,7 @@ public class Connection : WifiDirectBase
         {
             Logger.Log("Connection: OnConnect - Connected to " + addr);
             Connected = true;
-            base.StopDiscovering();
-            Logger.Log("Connection: StopDiscovering");
-            StartCoroutine(DelaySendId(1));
+            StartCoroutine(DelaySendId(2));
         }
         else
         {
@@ -161,6 +159,8 @@ public class Connection : WifiDirectBase
     IEnumerator DelaySendId(float wait)
     {
         yield return new WaitForSeconds(wait);
+        base.StopDiscovering();
+        Logger.Log("Connection: StopDiscovering");
         base.Send(new Message(MessageTypes.SEND_ID, MyId));
     }
 
