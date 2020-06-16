@@ -1,15 +1,17 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
     public GameObject wifiDisabledObject;
     public GameObject wifiEnabledObject;
+    public GameObject connectButton;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        //StateManager.Init();
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_MENU, true);
+        DisplayConnectButton(false);
     }
 
     // Start is called before the first frame update
@@ -26,7 +28,11 @@ public class MainMenu : MonoBehaviour
             wifiDisabledObject.SetActive(true);
             wifiEnabledObject.SetActive(false);
         }
-        //StateManager.instance.ChangeState(State.FINDING_NEARBY);
+    }
+
+    public void PlayWithBOT()
+    {
+        Connection.Instance.OfflineMode();
     }
 
     public void StopPlaying()
@@ -43,5 +49,17 @@ public class MainMenu : MonoBehaviour
             wifiDisabledObject.SetActive(false);
             wifiEnabledObject.SetActive(true);
         }
+    }
+
+    public void ConnectPlayer()
+    {
+        List<string> deviceList = Connection.Instance.deviceList;
+        Logger.Log("Device list: " + deviceList.ToString());
+        Connection.Instance.MakeConnection(deviceList[deviceList.Count - 1]);
+    }
+
+    public void DisplayConnectButton(bool isActive)
+    {
+        connectButton.SetActive(isActive);
     }
 }

@@ -60,14 +60,14 @@ public class GameManager : MonoBehaviour
                             Logger.Log("GameManager: retrieve OpId from CurrentState");
                             Connection.Instance.OpId = isHost ? CurrentState.GuestPlayerId : CurrentState.HostPlayerId;
                         }
-                        SceneManager.LoadScene(Constants.SCENE_INDEX_PREGAME);
+                        SceneManager.LoadSceneAsync(Constants.SCENE_INDEX_PREGAME);
                         break;
                     }
 
                 case State.BEGIN_BATTLE:
                     {
                         Logger.Log("GameManager: BEGIN_BATTLE");
-                        SceneManager.LoadScene(Constants.SCENE_INDEX_INGAME);
+                        SceneManager.LoadSceneAsync(Constants.SCENE_INDEX_INGAME);
                         break;
                     }
 
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
                     {
                         Logger.Log("GameManager: CHANGE_TURN");
                         // Short delay before starting new turn
-                        StartCoroutine(DelayBeginTurn(2));
+                        StartCoroutine(DelayBeginTurn(1));
                         break;
                     }
 
@@ -136,9 +136,16 @@ public class GameManager : MonoBehaviour
 
     private void NotifyChangeState(GameState newState)
     {
-        string JsonifiedState = JsonUtility.ToJson(newState);
-        Connection.Instance.Send(new Message(MessageTypes.STATE_CHANGE, JsonifiedState));
-        Logger.Log("GameManager: NotifyChangeState - " + JsonifiedState);
+        if (Connection.Instance.isOnline)
+        {
+            string JsonifiedState = JsonUtility.ToJson(newState);
+            Connection.Instance.Send(new Message(MessageTypes.STATE_CHANGE, JsonifiedState));
+            Logger.Log("GameManager: NotifyChangeState - " + JsonifiedState);
+        }
+        else
+        {
+            BOTGameManager.Instance.OnRequestChangeState(newState);
+        }
     }
 
     public void ChangeState(GameState newState)

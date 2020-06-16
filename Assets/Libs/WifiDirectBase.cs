@@ -60,11 +60,12 @@ public class WifiDirectBase : MonoBehaviour {
 	public void BroadcastService(string service, Dictionary<string, string> record) {
 		using(AndroidJavaObject hashMap = new AndroidJavaObject("java.util.HashMap"))
 		{
-			foreach(KeyValuePair<string, string> kvp in record)
-			{
-				hashMap.Call<string> ("put", kvp.Key, kvp.Value);
-			}
-			_wifiDirect.CallStatic ("broadcastService", service, hashMap);
+            //foreach (KeyValuePair<string, string> kvp in record)
+            //{
+            //    hashMap.Call<string>("put", kvp.Key, kvp.Value);
+            //}
+            _wifiDirect.CallStatic("broadcastService", service, hashMap);
+            //_wifiDirect.CallStatic("broadcastService", service, null);
 		}
 	}
 
@@ -184,8 +185,10 @@ public class WifiDirectBase : MonoBehaviour {
 	/// <summary>
 	/// Called when connected to a client
 	/// </summary>
-	public virtual void OnConnect () {
-		
+	//public virtual void OnConnect (string addr)
+	public virtual void OnConnect()
+	{
+
 	}
 
 	/// <summary>
@@ -217,6 +220,89 @@ public class WifiDirectBase : MonoBehaviour {
 		string stringifiedMessage = strDict.Split('=')[1];
 		Message message = JsonUtility.FromJson<Message>(stringifiedMessage);
 		return message;
+	}
+}
+#endif
+
+#if UNITY_IOS
+public class WifiDirectBase : MonoBehaviour
+{
+	public void Initialize(string gameObjectName)
+	{
+	}
+
+	public void Terminate()
+	{
+	}
+
+	public string GetDeviceAddress()
+	{
+		return null;
+	}
+
+	public void BroadcastService(string service, Dictionary<string, string> record)
+	{
+	}
+
+	public void DiscoverServices()
+	{
+	}
+
+	public void StopDiscovering()
+	{
+	}
+
+	public void ConnectToService(string addr)
+	{
+	}
+
+	public void PublishMessage(string msg)
+	{
+	}
+
+	public bool IsReady()
+	{
+		return false;
+	}
+
+	public virtual void OnServiceConnected()
+	{
+		Debug.Log("service is legit");
+	}
+
+	public virtual void OnServiceDisconnected()
+	{
+		Debug.Log("service failed");
+	}
+
+	public virtual void OnServiceFound(string addr)
+	{
+
+	}
+
+	public void OnReceiveStringifyRecord(string stringifyRecord)
+	{
+	}
+
+	public virtual void OnTxtRecord(string addr, Dictionary<string, string> record)
+	{
+	}
+
+	public virtual void OnConnect()
+	{
+	}
+
+	public virtual void OnReceiveMessage(string message)
+	{
+	}
+
+	public void Send(Message message)
+	{
+	}
+
+	public Message OnReceive(string strDict)
+	{
+		return new Message();
 	}
 }
 #endif

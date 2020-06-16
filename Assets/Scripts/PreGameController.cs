@@ -11,6 +11,10 @@ public class PreGameController : MonoBehaviour
 
     private GameObject FieldMap;
 
+    public GameObject WaterHigh = null;
+    public GameObject WaterLow = null;
+    public GameObject SettingsManager = null;
+
     private int RemainingTime = Constants.ARRANGE_SHIP_TIME;
 
     // Start is called before the first frame update
@@ -19,8 +23,10 @@ public class PreGameController : MonoBehaviour
         FieldMap = Instantiate(
             FieldMapPrefab,
             transform.position,
-            Quaternion.identity
+            Quaternion.identity,
+            gameObject.transform
         );
+        FieldMap.GetComponent<FieldMapController>().SceneController = gameObject;
         FieldMap.GetComponent<FieldMapController>().Init();
         InitShip(0, 4, new Vector3(18, 9, 34.5f));
         InitShip(1, 3, new Vector3(38, 9, 34.5f));
@@ -32,6 +38,39 @@ public class PreGameController : MonoBehaviour
         InitShip(7, 1, new Vector3(18, 9, -40.0f));
         InitShip(8, 1, new Vector3(38, 9, -40.0f));
         InitShip(9, 1, new Vector3(58, 9, -40.0f));
+
+        // Set up water quality
+        int waterQuality = (int) SettingsManager.GetComponent<SettingsManager>().WaterQuality;
+        if (waterQuality >= 2)
+        {
+            WaterHigh.SetActive(true);
+            WaterLow.SetActive(false);
+        } else
+        {
+            WaterHigh.SetActive(false);
+            WaterLow.SetActive(true);
+        }
+        if (waterQuality == 2)
+        {
+            WaterHigh.GetComponent<Water>().Enabled = false;
+        }
+        if (waterQuality == 3)
+        {
+            WaterHigh.GetComponent<Water>().Enabled = true;
+        }
+
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_PREGAME, true);
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BACKGROUND_OCEAN, true);
+
+        // handle play with BOT
+        if (!Connection.Instance.isOnline)
+        {
+            FieldMapController fieldMapCon = FieldMap.GetComponent<FieldMapController>();
+            fieldMapCon.AutoArrangeShips();
+            string serializedShips = fieldMapCon.GetSerializedShips();
+            fieldMapCon.ResetAllShips();
+            BOTGameManager.Instance.Ready(serializedShips);
+        }
 
         InvokeRepeating("UpdateRemainingTime", 1.0f, 1.0f);
     }
@@ -47,7 +86,8 @@ public class PreGameController : MonoBehaviour
         GameObject ship = Instantiate(
             prefab,
             initialPos,
-            prefab.transform.rotation
+            prefab.transform.rotation,
+            gameObject.transform
         );
         ship.GetComponent<ShipController>().FieldMap = FieldMap;
         ship.GetComponent<ShipController>().id = id;

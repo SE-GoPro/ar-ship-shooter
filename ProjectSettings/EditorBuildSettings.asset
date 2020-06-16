@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/Menu.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/Menu 3D.unity
     guid: fa0913115ac1d4fba8b9d10280f4b04d
@@ -17,6 +17,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/InGame.unity
     guid: 55be4ab9b4d0943e394a66ee7475eb4c
+  - enabled: 1
+    path: Assets/Scenes/InGameAR.unity
+    guid: e19fde825460d4b049d458adc8df9d05
   m_configObjects:
+    com.unity.xr.arcore.PlayerSettings: {fileID: 11400000, guid: 41100bdd1cabc482aa05dadc83962160,
+      type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 46e03f316d7554b238d5ac65d4cd84e5,
       type: 2}

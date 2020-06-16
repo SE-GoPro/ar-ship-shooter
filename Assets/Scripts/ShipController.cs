@@ -15,6 +15,7 @@ class ShipController : MonoBehaviour
     public GameObject FieldMap;
     public GameObject RotateButton;
     public int Attacked = 0;
+    public bool Revealed = false;
 
     [SerializeField]
     public UnityEvent OnBeginDrag;
@@ -88,6 +89,7 @@ class ShipController : MonoBehaviour
         OnBeginDrag.Invoke();
         Dragging = true;
         FieldMap.GetComponent<FieldMapController>().RemoveShipFromArray(gameObject);
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BOAT_OUT_WATER);
     }
 
     void EndDrag()
@@ -113,12 +115,14 @@ class ShipController : MonoBehaviour
             RotateButton.gameObject.SetActive(false);
         }
         fieldMapColtroller.ResetCellStatus();
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BOAT_TO_WATER);
     }
 
     public void ResetShip()
     {
         FieldMapController fieldMapColtroller = FieldMap.GetComponent<FieldMapController>();
         transform.position = InitialPosition;
+        SetDirection(4);
         fieldMapColtroller.RemoveShipFromArray(gameObject);
         RotateButton.gameObject.SetActive(true);
     }
@@ -171,6 +175,12 @@ class ShipController : MonoBehaviour
         Color color;
         string colorCode = isHost ? Constants.SHIP_COLOR_BLUE : Constants.SHIP_COLOR_RED;
         ColorUtility.TryParseHtmlString(colorCode, out color);
-        GetComponent<Renderer>().material.color = color;
+        GetComponent<Renderer>().material.SetColor("_EmissionColor", color);
+    }
+
+    public void Reveal()
+    {
+        gameObject.SetActive(true);
+        Revealed = true;
     }
 }

@@ -10,6 +10,8 @@ TagManager:
   - INGAME_TITLE
   - SCENE_CONTROLLER
   - FIRE_BALL
+  - GAME_ASSETS
+  - SETTINGS_MANAGER
   layers:
   - Default
   - TransparentFX

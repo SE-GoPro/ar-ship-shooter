@@ -20,6 +20,8 @@ public class FieldMapController : MonoBehaviour
     public bool IsMyField = false;
     public bool Selectable = false;
 
+    public List<CellController> HitCellsCon = new List<CellController>();
+
     public void Awake()
     {
         // Init ships
@@ -36,12 +38,14 @@ public class FieldMapController : MonoBehaviour
             {
                 GameObject cell = Instantiate(
                     CellPrefab,
-                    new Vector3(
-                        col * Constants.CELL_SIZE + LeftOffset,
-                        Constants.CELL_ELEVATION,
-                        row * Constants.CELL_SIZE + BottomOffset
-                    ),
-                    CellPrefab.transform.rotation
+                    Vector3.zero,
+                    CellPrefab.transform.rotation,
+                    gameObject.transform
+                );
+                cell.GetComponent<Transform>().transform.localPosition = new Vector3(
+                    col * Constants.CELL_SIZE + LeftOffset,
+                    Constants.CELL_ELEVATION,
+                    row * Constants.CELL_SIZE + BottomOffset
                 );
                 cell.GetComponent<CellController>().row = row;
                 cell.GetComponent<CellController>().col = col;
@@ -121,7 +125,7 @@ public class FieldMapController : MonoBehaviour
         return numMapArr;
     }
 
-    bool CheckValidCellCord(int row, int col)
+    public bool CheckValidCellCord(int row, int col)
     {
         if (row < 0 || row > Constants.MAP_SIZE - 1 || col < 0 || col > Constants.MAP_SIZE - 1)
         {
@@ -226,9 +230,8 @@ public class FieldMapController : MonoBehaviour
         }
     }
 
-    public void AutoArrangeShips()
+    public void ResetAllShips()
     {
-        // reset all arranged ships
         foreach (GameObject ship in shipArr)
         {
             if (ship != null)
@@ -236,6 +239,12 @@ public class FieldMapController : MonoBehaviour
                 ship.GetComponent<ShipController>().ResetShip();
             }
         }
+    }
+
+    public void AutoArrangeShips()
+    {
+        // reset all arranged ships
+        ResetAllShips();
         foreach (GameObject ship in allShips)
         {
             ShipController shipCon = ship.GetComponent<ShipController>();
@@ -257,6 +266,7 @@ public class FieldMapController : MonoBehaviour
             shipCon.SetShipToMap(randomRow, randomCol, ranDir);
         }
         ResetCellStatus();
+        SoundManager.Instance.PlaySound(SoundManager.Sound.BOAT_TO_WATER);
     }
 
     public string GetSerializedShips()
@@ -305,26 +315,48 @@ public class FieldMapController : MonoBehaviour
         }
     }
 
+    public GameObject GetShipAtCell(GameObject cell)
+    {
+        CellController cellCon = cell.GetComponent<CellController>();
+        int[,] numMapArr = GetNumericMap();
+        int ShipIdAtCell = numMapArr[cellCon.row, cellCon.col];
+        if (ShipIdAtCell == Constants.EMPTY_CELL_ID)
+        {
+            return null;
+        }
+        else
+        {
+            GameObject ship = GetComponent<FieldMapController>().shipArr[ShipIdAtCell];
+            return ship;
+        }
+    }
+
     public void CheckDestroyCell(GameObject cell)
     {
         Logger.Log("FieldMap: CheckDestroyCell");
         CellController cellCon = cell.GetComponent<CellController>();
         cellCon.Fired = true;
-        int[,] numMapArr = GetNumericMap();
-        int ShipIdAtCell = numMapArr[cellCon.row, cellCon.col];
-        if (ShipIdAtCell == Constants.EMPTY_CELL_ID)
+        GameObject ship = GetShipAtCell(cell);
+        if (ship == null)
         {
             // If empty cell
-            StartCoroutine(DelayDecreaseHealth(0, 2));
+            SoundManager.Instance.PlaySound(SoundManager.Sound.BOOM_MISS_WATER);
+            StartCoroutine(DelayDecreaseHealth(0, 1));
         } else
         {
             // If cell has ship
+            SoundManager.Instance.PlaySound(SoundManager.Sound.BOOM_HIT_WATER);
+            if (!HitCellsCon.Contains(cellCon))
+            {
+                HitCellsCon.Add(cellCon);
+            }
             cellCon.HasShip = true;
-            GameObject ship = GetComponent<FieldMapController>().shipArr[ShipIdAtCell];
             ship.GetComponent<ShipController>().Attacked++;
+            // If the whole ship destroyed
             if (ship.GetComponent<ShipController>().Attacked == ship.GetComponent<ShipController>().length)
             {
-                ship.SetActive(true);
+                HitCellsCon.Clear();
+                ship.GetComponent<ShipController>().Reveal();
                 // Show explosion
                 Vector2[] cellsPos = GetCellsInShip(ship.GetComponent<ShipController>());
                 foreach (Vector2 cellPos in cellsPos)
@@ -333,7 +365,7 @@ public class FieldMapController : MonoBehaviour
                     currentCell.GetComponent<CellController>().Boom.GetComponent<ParticleSystem>().Play();
                 }
             }
-            StartCoroutine(DelayDecreaseHealth(-1, 2));
+            StartCoroutine(DelayDecreaseHealth(-1, 1));
         }
         cellCon.ChangeStatus(CellStatus.FIRED);
     }
